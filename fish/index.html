@@ -1,70 +1,68 @@
 <!DOCTYPE html>
 <html lang="zh-Hant">
-
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>手勢撈金魚（高畫質重製）</title>
 
-  <title>手勢撈金魚（MediaPipe Hands）— 華麗結算</title>
+  <!-- 你的 style.css 可沿用 -->
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    /* 保底樣式（可刪） */
+    body{margin:0;background:#0b1325;color:#e5e7eb;font:14px/1.6 system-ui,sans-serif}
+    #wrap{display:grid;grid-template-columns:320px 1fr;gap:16px;height:100vh;padding:16px;box-sizing:border-box}
+    #panel{background:#111827;border-radius:16px;padding:16px}
+    #stageWrap{position:relative;background:#0f1b33;border-radius:16px;overflow:hidden}
+    #stage{display:block;width:100%;height:100%}
+    #fx{position:absolute;inset:0;pointer-events:none}
+    .row{margin:10px 0}
+    .btn{background:#334155;border:0;padding:8px 12px;border-radius:10px;color:#e5e7eb;cursor:pointer}
+    .meter{height:10px;background:#1f2937;border-radius:999px;overflow:hidden}
+    .meter i{display:block;height:100%;background:#60a5fa;width:100%}
+    #hud{position:absolute;top:10px;right:10px;background:rgba(0,0,0,.25);backdrop-filter: blur(4px);padding:8px 12px;border-radius:999px}
+  </style>
 
-  <!-- ✅ MediaPipe CDN -->
-  <script type="module" src="js/main.js"></script>
+  <!-- MediaPipe（可選；沒權限就會自動用滑鼠 fallback） -->
   <script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils/drawing_utils.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.min.js"></script>
-
-  <!-- ✅ CSS -->
-  <link rel="stylesheet" href="style.css">
 </head>
-
 <body>
-  <div id="wrap">
-    <div id="panel">
-      <h1>手勢撈金魚 <span class="badge">MediaPipe Hands</span></h1>
-      <div class="row">
-        <button id="btnStart" class="btn">▶ 開始遊戲 / 允許鏡頭</button>
-        <button id="btnReset" class="btn">↺ 重置</button>
-        <label class="toggle"><input id="mirrorChk" type="checkbox" checked> 🪞 鏡像模式</label>
-      </div>
-      <div class="row">分數：<span id="score" class="score">0</span></div>
-      <div class="row">稱號：<span id="rankNow" class="badge">—</span> <span id="rankNext" class="hint"></span></div>
-      <div class="row">時間：<span id="timeLeft">60</span>s</div>
-      <div class="row">FPS：<span id="fps">–</span></div>
-      <div class="row">撈網耐久度（不回復）</div>
-      <div class="meter"><i id="durFill"></i></div>
-      <p class="hint">手勢：<b>拇指尖(4) 與 食指尖(8) 距離</b> 小於門檻 ⇒ <span class="accent">收網</span>；否則為展開。建議 Chrome/Edge。</p>
-      <p class="hint">若鏡頭出不來，請用本機伺服器（VS Code Live Server 或 <code>npx http-server</code>）。</p>
+<div id="wrap">
+  <aside id="panel">
+    <h2>手勢撈金魚 <span class="badge">高畫質</span></h2>
+    <div class="row">
+      <button id="btnStart" class="btn">▶ 開始 / 允許鏡頭</button>
+      <button id="btnReset" class="btn">↺ 重置</button>
     </div>
+    <label class="row"><input id="mirrorChk" type="checkbox" checked> 🪞 鏡像模式</label>
+    <div class="row">分數：<b id="score">0</b></div>
+    <div class="row">稱號：<b id="rankNow">—</b> <span id="rankNext"></span></div>
+    <div class="row">時間：<b id="timeLeft">60</b> s</div>
+    <div class="row">FPS：<b id="fps">—</b></div>
+    <div class="row">撈網耐久</div>
+    <div class="meter"><i id="durFill"></i></div>
+    <p class="row" style="opacity:.8">捏合＝收網；滑鼠左鍵按住也可撈（沒鏡頭時）。</p>
+  </aside>
 
-    <div id="stageWrap">
-      <canvas id="stage"></canvas>
-      <canvas id="fx"></canvas>
-      <video id="video" playsinline></video>
-      <div class="topLeft">🕹️ <b>開手=展網</b>｜<b>捏合=收網</b></div>
-      <div class="topRight">⏱️ 倒數：<b id="hudTime">60</b>s｜🎯 命中：<b id="hudHit">0</b></div>
-      <div id="toast" class="toast" style="display:none">+1 🐟</div>
+  <main id="stageWrap">
+    <canvas id="stage"></canvas>
+    <canvas id="fx"></canvas>
+    <video id="video" playsinline muted style="position:absolute;right:12px;bottom:12px;width:240px;border-radius:12px;opacity:.25"></video>
+    <div id="hud">⏱️ <b id="hudTime">60</b>s｜🎯 命中：<b id="hudHit">0</b></div>
 
-      <!-- 結算 Modal -->
-      <div id="modalMask">
-        <div id="resultModal">
-          <div class="center">
-            <div class="rankBadge" id="rankBadge">
-              <div class="trophy">🏆</div>
-              <div class="rankName" id="rankName">—</div>
-            </div>
-            <div class="resultTitle" id="resultTitle">恭喜完成！</div>
-            <div class="resultLine" id="resultLine">分數 0｜稱號 —</div>
-            <div class="resultLine hint" id="resultHint"></div>
-            <div class="actions">
-              <button id="btnAgain" class="btn">再玩一次</button>
-              <button id="btnShot" class="btn">📸 截圖下載</button>
-              <button id="btnClose" class="btn ghost">關閉</button>
-            </div>
-            <div class="hint">* 截圖會把遊戲畫面＋稱號徽章合成一張 PNG</div>
-          </div>
-        </div>
+    <!-- 結算 -->
+    <div id="modalMask" style="display:none;position:absolute;inset:0;background:rgba(0,0,0,.55);align-items:center;justify-content:center">
+      <div style="background:#0f172a;border-radius:16px;padding:24px 28px;width:min(520px,90%)">
+        <h2 id="resultTitle" style="margin:0 0 8px">時間到！</h2>
+        <p id="resultLine" style="margin:0 0 4px">分數 0｜稱號 —</p>
+        <p id="resultHint" style="opacity:.8;margin:0 0 12px"></p>
+        <button id="btnAgain" class="btn">再玩一次</button>
+        <button id="btnClose" class="btn">關閉</button>
       </div>
     </div>
-  </div>
+  </main>
+</div>
+
+<script type="module" src="js/main.js"></script>
 </body>
 </html>

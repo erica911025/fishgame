@@ -1,39 +1,24 @@
-// camera.js
-// ✅ 啟動 MediaPipe Camera，將畫面交給 Hands 模組
+import { state } from './state.js';
+import { onHandResults } from './hand.js';
 
-import { onHandResults } from "./hand.js";
+const video = document.getElementById('video');
 
-let camera = null;
-let hands = null;
+export async function startCamera(canvas){
+  if(state.cameraStarted) return; state.cameraStarted=true;
+  if(!window.Hands || !window.Camera){ console.warn('No MediaPipe, using mouse only.'); return; }
 
-export function initHands() {
-  hands = new Hands({
-    locateFile: file => 
-      `https://cdn.jsdelivr.net/npm/@mediapipe/hands/${file}`
+  const hands = new Hands({ locateFile:(f)=>`https://cdn.jsdelivr.net/npm/@mediapipe/hands/${f}` });
+  hands.setOptions({ maxNumHands:1, modelComplexity: 1, minDetectionConfidence:.6, minTrackingConfidence:.5 });
+  hands.onResults(res=>{
+    onHandResults(res, canvas);
+    // FPS 估算（粗略）
+    state.fps = 60;
   });
+  state.hands = hands;
 
-  hands.setOptions({
-    maxNumHands: 1,
-    modelComplexity: 1,
-    minDetectionConfidence: 0.6,
-    minTrackingConfidence: 0.5
+  const cam = new Camera(video, {
+    onFrame: async()=>{ await hands.send({ image: video }); },
+    width: 640, height: 480
   });
-}
-
-export async function startCamera(video, canvas) {
-  if (!hands) initHands();
-
-  hands.onResults(results => onHandResults(results, canvas));
-
-  if (!camera) {
-    camera = new Camera(video, {
-      onFrame: async () => {
-        await hands.send({ image: video });
-      },
-      width: 640,
-      height: 480
-    });
-  }
-
-  await camera.start();
+  try{ await cam.start(); }catch(e){ console.warn('Camera denied, mouse-only mode.'); }
 }

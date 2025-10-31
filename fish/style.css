@@ -140,3 +140,7 @@ h1{
     font-weight:700; 
     letter-spacing:.5px
 }
+canvas {
+  image-rendering: crisp-edges;
+  image-rendering: pixelated;
+}

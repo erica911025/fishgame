@@ -1,132 +1,53 @@
-// fish.js
-// ✅ 管理魚：產生 / 移動 / 增速 / 被抓 + 加分
+import { state } from './state.js';
+import { FISH_TYPES, TARGET_FISH_COUNT } from './config.js';
+import { ASSETS } from './assets.js';
 
-import { state } from "./state.js";
-import { rand } from "./utils.js";
-import {
-  TARGET_FISH_COUNT,
-  FISH_TYPES,
-  DIFF_SPEED_GROWTH_PER_SEC,
-  DECAY_PER_CATCH
-} from "./config.js";
-
-import { damageNet } from "./hud.js";
-import { popToast, ping } from "./effects.js";
-
-
-// ✅ 產生一隻魚
-export function createFish(canvas) {
-  const W = canvas.width;
-  const H = canvas.height;
-
-  const t = FISH_TYPES[Math.floor(Math.random() * FISH_TYPES.length)];
-  const r = rand(t.size[0], t.size[1]);
-  const sp = (Math.random() * 2 + 1) * t.speed;
-  const a = Math.random() * Math.PI * 2;
-
+export function createFish(canvas){
+  const t = FISH_TYPES[Math.floor(Math.random()*FISH_TYPES.length)];
+  const a = Math.random()*Math.PI*2;
+  const sp= (1.2+Math.random()*1.4) * t.speed;
+  const [w,h] = t.size;
   return {
-    type: t.key,
-    hue: t.hue,
-    score: t.score,
-
-    x: Math.random() * W,
-    y: Math.random() * H,
-    vx: Math.cos(a) * sp * (Math.random() < .5 ? -1 : 1),
-    vy: Math.sin(a) * sp,
-
-    r,
-    alive: true,
-    tw: 0 // 閃爍動畫參數
+    type:t.key, img:ASSETS.fish[t.key], score:t.score,
+    x: Math.random()*canvas.width/state.dpr, 
+    y: Math.random()*canvas.height/state.dpr,
+    vx: Math.cos(a)*sp*(Math.random()<.5?-1:1),
+    vy: Math.sin(a)*sp,
+    w, h
   };
 }
 
+export function ensureFishCount(canvas){
+  while(state.fish.length < TARGET_FISH_COUNT) state.fish.push(createFish(canvas));
+}
 
-// ✅ 保持魚數
-export function ensureFish(canvas) {
-  while (state.fish.length < TARGET_FISH_COUNT) {
-    state.fish.push(createFish(canvas));
+export function stepFish(canvas){
+  const W = canvas.width/state.dpr, H = canvas.height/state.dpr;
+  for(const f of state.fish){
+    f.vx += (Math.random()-.5)*0.1;
+    f.vy += (Math.random()-.5)*0.1;
+    const sp = Math.hypot(f.vx,f.vy);
+    const max = 2.4;
+    if(sp>max){ f.vx=f.vx/sp*max; f.vy=f.vy/sp*max; }
+    f.x += f.vx; f.y += f.vy;
+    if(f.x<0){ f.x=0; f.vx=Math.abs(f.vx); }
+    if(f.y<0){ f.y=0; f.vy=Math.abs(f.vy); }
+    if(f.x>W){ f.x=W; f.vx=-Math.abs(f.vx); }
+    if(f.y>H){ f.y=H; f.vy=-Math.abs(f.vy); }
   }
 }
 
-
-// ✅ 隨時間加速（難度曲線）
-function fishSpeedMul() {
-  if (!state.startTs) return 1;
-  const sec = (performance.now() - state.startTs) / 1000;
-  return 1 + sec * DIFF_SPEED_GROWTH_PER_SEC;
-}
-
-
-// ✅ 魚移動 & 撞牆
-export function stepFish(canvas) {
-  const W = canvas.width;
-  const H = canvas.height;
-  const mul = fishSpeedMul();
-
-  for (const f of state.fish) {
-    f.vx += (Math.random() - .5) * 0.2;
-    f.vy += (Math.random() - .5) * 0.2;
-
-    const speed = Math.hypot(f.vx, f.vy);
-    const maxS = 2.8 * mul;
-    if (speed > maxS) {
-      f.vx = f.vx / speed * maxS;
-      f.vy = f.vy / speed * maxS;
+export function drawFish(ctx){
+  for(const f of state.fish){
+    const img = f.img; if(!img || !img.complete) continue;
+    ctx.save();
+    if(f.vx<0){
+      ctx.translate(f.x, f.y);
+      ctx.scale(-1,1);
+      ctx.drawImage(img, -f.w/2, -f.h/2, f.w, f.h);
+    }else{
+      ctx.drawImage(img, f.x - f.w/2, f.y - f.h/2, f.w, f.h);
     }
-
-    f.x += f.vx;
-    f.y += f.vy;
-
-    // 邊界反彈
-    if (f.x < f.r) f.vx = Math.abs(f.vx), f.x = f.r;
-    if (f.x > W - f.r) f.vx = -Math.abs(f.vx), f.x = W - f.r;
-    if (f.y < f.r) f.vy = Math.abs(f.vy), f.y = f.r;
-    if (f.y > H - f.r) f.vy = -Math.abs(f.vy), f.y = H - f.r;
-
-    // ✅ 撞網 → 得分 + 損耗
-    if (state.hand.pinch && state.hand.visible && !state.failed) {
-      const d = Math.hypot(f.x - state.hand.x, f.y - state.hand.y);
-      if (d < state.hand.radius) {
-        state.score += f.score;
-        state.hits++;
-
-        damageNet(DECAY_PER_CATCH);
-        popToast(`+${f.score} 🐟`);
-        ping();
-
-        Object.assign(f, createFish(canvas)); // 重生魚
-      }
-    }
-
-    f.tw++;
-  }
-}
-
-
-// ✅ 畫魚
-export function drawFish(ctx) {
-  for (const f of state.fish) {
-    const hue = (f.type === "glow")
-      ? (f.hue + Math.sin(f.tw * 0.2) * 50)
-      : f.hue;
-
-    // 身體
-    ctx.beginPath();
-    ctx.fillStyle = `hsl(${hue}, 80%, 60%)`;
-    ctx.arc(f.x, f.y, f.r, 0, Math.PI * 2);
-    ctx.fill();
-
-    // 尾巴
-    ctx.beginPath();
-    ctx.moveTo(f.x - f.r, f.y);
-    ctx.quadraticCurveTo(f.x - f.r * 2, f.y - f.r * 0.6, f.x - f.r * 0.8, f.y - f.r * 0.2);
-    ctx.quadraticCurveTo(f.x - f.r * 2, f.y + f.r * 0.6, f.x - f.r, f.y);
-    ctx.fill();
-
-    // 眼睛
-    ctx.fillStyle = "#0b1220";
-    ctx.beginPath();
-    ctx.arc(f.x + f.r * 0.35, f.y - f.r * 0.2, f.r * 0.15, 0, Math.PI * 2);
-    ctx.fill();
+    ctx.restore();
   }
 }
