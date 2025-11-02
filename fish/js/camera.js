@@ -7,6 +7,7 @@ export async function startCamera(canvas){
   if(state.cameraStarted) return; state.cameraStarted=true;
   if(!window.Hands || !window.Camera){ console.warn('No MediaPipe, using mouse only.'); return; }
 
+
   const hands = new Hands({ locateFile:(f)=>`https://cdn.jsdelivr.net/npm/@mediapipe/hands/${f}` });
   hands.setOptions({ maxNumHands:1, modelComplexity: 1, minDetectionConfidence:.6, minTrackingConfidence:.5 });
   hands.onResults(res=>{
@@ -20,5 +21,6 @@ export async function startCamera(canvas){
     onFrame: async()=>{ await hands.send({ image: video }); },
     width: 640, height: 480
   });
+  video.style.transform = state.mirror ? "scaleX(-1)" : "scaleX(1)";
   try{ await cam.start(); }catch(e){ console.warn('Camera denied, mouse-only mode.'); }
 }

@@ -12,8 +12,13 @@ const canvas = document.getElementById('stage');
 bindMouseNet(canvas); // 滑鼠撈網 fallback
 resize();
 
-mirrorChk.addEventListener('change', ()=>{ state.mirror = mirrorChk.checked; });
+// mirrorChk.addEventListener('change', ()=>{ state.mirror = mirrorChk=checked; });
 btnStart.addEventListener('click', ()=> startGame());
 btnReset.addEventListener('click', ()=> resetGame());
 btnAgain.addEventListener('click', ()=> startGame());
 btnClose.addEventListener('click', ()=> document.getElementById('modalMask').style.display='none');
+
+mirrorChk.addEventListener("change", () => {
+    state.mirror = mirrorChk.checked;
+    video.style.transform = state.mirror ? "scaleX(-1)" : "scaleX(1)";
+});
