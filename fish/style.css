@@ -145,3 +145,31 @@ canvas {
   image-rendering: crisp-edges;
   image-rendering: pixelated;
 }
+
+#countdownOverlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.65);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+  color: #fff;
+  font-size: 120px;
+  font-weight: bold;
+  backdrop-filter: blur(5px);
+}
+
+#countdownOverlay.hide {
+  display: none;
+}
+
+#countdownText {
+  animation: scalePop 0.7s ease-out;
+}
+
+@keyframes scalePop {
+  0%   { transform: scale(0.2); opacity: 0; }
+  60%  { transform: scale(1.2); opacity: 1; }
+  100% { transform: scale(1); opacity: 1; }
+}

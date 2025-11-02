@@ -21,14 +21,36 @@ export function resetGame(){
   state.fish.length=0; state.items.length=0; state.obstacles.length=0;
   updateTimeHUD(); updateDurabilityHUD(); updateRankHUD(); updateGameInfoHUD();
 }
-export async function startGame(){
+export async function startGame({ paused = false } = {}){
   resetGame();
   await startCamera(canvas);
-  state.running=true;
-  clearInterval(tId);
-  tId = setInterval(()=>{ if(!state.running) return; state.tLeft--; updateTimeHUD(); if(state.tLeft<=0) endGame(false); },1000);
+
+  state.running = true;
+  state.paused = paused;
+
+  if (!paused) {
+    startTimer();
+  }
+
   loop();
 }
+
+function startTimer() {
+  clearInterval(tId);
+  tId = setInterval(() => {
+    if (!state.running || state.paused) return;
+    state.tLeft--;
+    updateTimeHUD();
+    if (state.tLeft <= 0) endGame(false);
+  }, 1000);
+}
+
+
+export function resumeGame() {
+  state.paused = false;
+  startTimer();
+}
+
 function endGame(broken){
   state.running=false; clearInterval(tId);
   showResultModal(!!broken);
@@ -36,6 +58,10 @@ function endGame(broken){
 bindEndGame(endGame);
 
 function loop(){
+  if (state.paused) {
+  requestAnimationFrame(loop);
+  return;
+}
   if(!state.running) return;
   ctx.clearRect(0,0,canvas.width,canvas.height);
 
@@ -78,3 +104,22 @@ window.addEventListener('resize', resize);
 
 // 啟動時預載圖片
 loadAssets();
+
+export async function runCountdown() {
+  const overlay = document.getElementById("countdownOverlay");
+  const text = document.getElementById("countdownText");
+
+  const seq = ["3", "2", "1", "開始!"];
+
+  overlay.classList.remove("hide");
+
+  for (let i = 0; i < seq.length; i++) {
+    text.innerText = seq[i];
+    text.style.animation = "none";
+    void text.offsetWidth; // reset animation
+    text.style.animation = "";
+    await new Promise(r => setTimeout(r, 900));
+  }
+
+  overlay.classList.add("hide");
+}
