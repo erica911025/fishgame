@@ -5,7 +5,7 @@ export const state = {
   durability:1, failed:false,
 
   fish:[], items:[], obstacles:[],
-  hand:{ x:0,y:0, radius:60, pinch:false, visible:false },
+  hand:{ x:0,y:0, radius:60, pinch:false, visible:false, speed: 0 },
   pinchFrames:0, wasPinch:false,
 
   // devices
@@ -13,4 +13,6 @@ export const state = {
   mirror: true,
   cameraStarted:false,
   hands:null,
+  dx: 0,
+  dy: 0
 };

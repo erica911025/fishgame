@@ -46,10 +46,24 @@ export function onHandResults(results, canvas){
     state.hand.y = rawY * H;
     state.hand.visible = true;
 
+    // ✅ 計算手移動速度
+    const prevX = state.hand.prevX ?? state.hand.x;
+    const prevY = state.hand.prevY ?? state.hand.y;
+
+    const dx = state.hand.x - prevX;
+    const dy = state.hand.y - prevY;
+
+    state.hand.speed = Math.hypot(dx, dy);
+
+    // 保存前一幀座標供下次使用
+    state.hand.prevX = state.hand.x;
+    state.hand.prevY = state.hand.y;
+
+
     const tx8 = state.mirror ? (1-tip.x):tip.x;
     const tx4 = state.mirror ? (1-thumb.x):thumb.x;
-    const dx = (tx8-tx4)*W, dy=(tip.y-thumb.y)*H;
-    const dist = Math.hypot(dx,dy);
+    const pdx = (tx8-tx4)*W, pdy=(tip.y-thumb.y)*H;
+    const dist = Math.hypot(pdx,pdy);
     const pinchThreshold = Math.min(W,H) * PINCH_THRESHOLD_RATIO;
     const isPinch = dist < pinchThreshold;
 

@@ -13,6 +13,7 @@ export function createFish(canvas){
     y: Math.random()*canvas.height/state.dpr,
     vx: Math.cos(a)*sp*(Math.random()<.5?-1:1),
     vy: Math.sin(a)*sp,
+    speed: sp,   // 魚的基礎速度
     w, h
   };
 }
@@ -24,6 +25,26 @@ export function ensureFishCount(canvas){
 export function stepFish(canvas){
   const W = canvas.width/state.dpr, H = canvas.height/state.dpr;
   for(const f of state.fish){
+    
+  const scareDist = 120;      // 魚感知距離
+  const scareSpeed = 18;      // 手速 threshold (可調)
+  const fleeBoost = 100;      // 逃跑加速倍率
+
+  const distToHand = Math.hypot(f.x - state.hand.x, f.y - state.hand.y);
+
+  if (distToHand < scareDist && state.hand.speed > scareSpeed) {
+    // 計算逃跑方向：魚往手的反方向移動
+    const angle = Math.atan2(f.y - state.hand.y, f.x - state.hand.x);
+    f.vx = Math.cos(angle) * f.speed * fleeBoost;
+    f.vy = Math.sin(angle) * f.speed * fleeBoost;
+    // 可以加魚“嚇一跳”特效用 flag
+    f.scared = true;
+    setTimeout(()=>{ 
+      f.vx *= 0.4; 
+      f.vy *= 0.4;
+    }, 5000);
+  }
+
     f.vx += (Math.random()-.5)*0.1;
     f.vy += (Math.random()-.5)*0.1;
     const sp = Math.hypot(f.vx,f.vy);
