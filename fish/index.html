@@ -7,21 +7,6 @@
 
   <!-- 你的 style.css 可沿用 -->
   <link rel="stylesheet" href="style.css" />
-  <style>
-    /* 保底樣式（可刪） */
-    body{margin:0;background:#0b1325;color:#e5e7eb;font:14px/1.6 system-ui,sans-serif}
-    #wrap{display:grid;grid-template-columns:320px 1fr;gap:16px;height:100vh;padding:16px;box-sizing:border-box}
-    #panel{background:#111827;border-radius:16px;padding:16px}
-    #stageWrap{position:relative;background:#0f1b33;border-radius:16px;overflow:hidden}
-    #stage{display:block;width:100%;height:100%}
-    #fx{position:absolute;inset:0;pointer-events:none}
-    .row{margin:10px 0}
-    .btn{background:#334155;border:0;padding:8px 12px;border-radius:10px;color:#e5e7eb;cursor:pointer}
-    .meter{height:10px;background:#1f2937;border-radius:999px;overflow:hidden}
-    .meter i{display:block;height:100%;background:#60a5fa;width:100%}
-    #hud{position:absolute;top:10px;right:10px;background:rgba(0,0,0,.25);backdrop-filter: blur(4px);padding:8px 12px;border-radius:999px}
-  </style>
-
   <!-- MediaPipe（可選；沒權限就會自動用滑鼠 fallback） -->
   <script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.min.js"></script>
@@ -29,31 +14,47 @@
 <body>
 <div id="wrap">
   <aside id="panel">
-    <h2>手勢撈金魚 <span class="badge">高畫質</span></h2>
-    <div class="row">
-      <button id="btnStart" class="btn">▶ 開始 / 允許鏡頭</button>
-      <button id="btnReset" class="btn">↺ 重置</button>
+    <div>
+      <h2>手勢撈金魚 <span class="badge">高畫質</span></h2>
+      <div class="row">
+        <button id="btnStart" class="btn">▶ 開始 / 允許鏡頭</button>
+        <button id="btnReset" class="btn">↺ 重置</button>
+      </div>
+      <label class="row"><input id="mirrorChk" type="checkbox" checked> 🪞 鏡像模式</label>
+      <div class="row">分數：<b id="score">0</b></div>
+      <div class="row">稱號：<b id="rankNow">—</b> <span id="rankNext"></span></div>
+      <div class="row">時間：<b id="timeLeft">60</b> s</div>
+      <div class="row">FPS：<b id="fps">—</b></div>
+      <div class="row">撈網耐久</div>
+      <div class="meter"><i id="durFill"></i></div>
+      <p class="row" style="opacity:.8">捏合＝收網；滑鼠左鍵按住也可撈（沒鏡頭時）。</p>
+      
     </div>
-    <label class="row"><input id="mirrorChk" type="checkbox" checked> 🪞 鏡像模式</label>
-    <div class="row">分數：<b id="score">0</b></div>
-    <div class="row">稱號：<b id="rankNow">—</b> <span id="rankNext"></span></div>
-    <div class="row">時間：<b id="timeLeft">60</b> s</div>
-    <div class="row">FPS：<b id="fps">—</b></div>
-    <div class="row">撈網耐久</div>
-    <div class="meter"><i id="durFill"></i></div>
-    <p class="row" style="opacity:.8">捏合＝收網；滑鼠左鍵按住也可撈（沒鏡頭時）。</p>
-    
-    <b>--- 分數計算 ---</b>
-    <div id="score">
-      <p><img src="/fish/image/fish1.png" alt="" style="width: 25px; height: 25px;">：+1分</p>
-      <p><img src="/fish/image/shrimp1.png" alt="" style="width: 25px; height: 25px;">：+1分</p>
-      <p><img src="/fish/image/fish2.png" alt="" style="width: 25px; height: 25px;">：+2分</p>
-      <p><img src="/fish/image/fish3.png" alt="" style="width: 25px; height: 25px;">：+3分</p>
-      <p><img src="/fish/image/fish4.png" alt="" style="width: 25px; height: 25px;">：+4分</p>
-      <p><img src="/fish/image/trash-1.png" alt="" style="width: 25px; height: 25px;">：-1分</p>
-      <p><img src="/fish/image/trash-2.png" alt="" style="width: 25px; height: 25px;">：-2分</p>
-      <p><img src="/fish/image/time.png" alt="" style="width: 25px; height: 25px;">：時間+5</p>
-      <p><img src="/fish/image/treasure.png" alt="" style="width: 25px; height: 25px;">：耐久+5</p>
+
+    <div id="score" style="margin: 20px 0;" >
+      <b >--- 分數計算 ---</b>
+      <div>
+        <p><img src="/fish/image/fish1.png" alt="" style="width: 25px; height: 25px;">：+1分</p>
+        <p><img src="/fish/image/shrimp1.png" alt="" style="width: 25px; height: 25px;">：+1分</p>
+        <p><img src="/fish/image/fish2.png" alt="" style="width: 25px; height: 25px;">：+2分</p>
+        <p><img src="/fish/image/fish3.png" alt="" style="width: 25px; height: 25px;">：+3分</p>
+        <p><img src="/fish/image/turtle3.png" alt="" style="width: 25px; height: 25px;">：+3分</p>
+        <p><img src="/fish/image/fish4.png" alt="" style="width: 25px; height: 25px;">：+4分</p>
+        <p><img src="/fish/image/trash-1.png" alt="" style="width: 25px; height: 25px;">：-1分</p>
+        <p><img src="/fish/image/trash-2.png" alt="" style="width: 25px; height: 25px;">：-2分</p>
+        <p><img src="/fish/image/time.png" alt="" style="width: 25px; height: 25px;">：時間+5</p>
+        <p><img src="/fish/image/treasure.png" alt="" style="width: 25px; height: 25px;">：耐久+5</p>
+      </div>
+    </div>
+
+
+    <div id="ranks" style="margin: 20px 0;">
+      <b>--- 稱號 ---</b>
+      <p>0分：新手撈手</p>
+      <p>10分：撈魚學徒</p>
+      <p>20分：撈魚高手</p>
+      <p>35分：撈金魚達人</p>
+      <p>50分：金魚界傳奇</p>
     </div>
   </aside>
 

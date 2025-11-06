@@ -1,6 +1,6 @@
 :root { 
     --bg:#0b1220; 
-    --panel:#111827; 
+    --panel:#111827aa; 
     --accent:#60a5fa; 
     --good:#b91010; 
     --warn:#f5220b;
@@ -10,8 +10,8 @@
 html,body{
     height:100%; 
     margin:0; 
-    background:radial-gradient(1000px 600px at 50% 20%, #0e1b2e 0%, #08111f 60%, #050a14 100%); 
-    color:#343f53; 
+    background:radial-gradient(1000px 600px at 50% 20%, #687c9c 0%, #5a77a7 60%, #21345c 100%); 
+    color:#ffffff; 
     font-family:system-ui, -apple-system, Segoe UI, Roboto, Noto Sans TC, sans-serif;
 }
 #wrap{
@@ -176,10 +176,19 @@ canvas {
 
 #score{
     display: flex;
+    flex-direction: column;
+}
+
+#score div{
+    display: flex;
     flex-wrap: wrap;
     justify-content: space-between;
 }
 
 #score p{
+    margin: 5px;
+}
+
+#ranks p{
     margin: 5px;
 }
