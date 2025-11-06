@@ -173,3 +173,13 @@ canvas {
   60%  { transform: scale(1.2); opacity: 1; }
   100% { transform: scale(1); opacity: 1; }
 }
+
+#score{
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+}
+
+#score p{
+    margin: 5px;
+}
