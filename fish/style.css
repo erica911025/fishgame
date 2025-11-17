@@ -13,31 +13,36 @@ html,body{
     background:radial-gradient(1000px 600px at 50% 20%, #687c9c 0%, #5a77a7 60%, #21345c 100%); 
     color:#ffffff; 
     font-family:system-ui, -apple-system, Segoe UI, Roboto, Noto Sans TC, sans-serif;
+    overflow: hidden;
 }
 #wrap{
     display:grid; 
     grid-template-columns: 320px 1fr; 
     gap:16px; 
-    height:100%; 
+    height:100vh; 
     padding:16px; 
     box-sizing:border-box;
 }
 #panel{
     background:var(--panel); 
     border-radius:16px; 
-    padding:16px; 
+    padding:0px 16px;
     box-shadow:0 10px 30px rgba(0,0,0,.35);
+    height: 100%;
 }
 #stageWrap{
     position:relative; 
     background:linear-gradient(180deg, rgba(96,165,250,.15), rgba(59,130,246,.05)); 
+    height: 100%;
     border-radius:16px; 
     overflow:hidden;
 }
 #stage{
+    position: relative;
     display:block; 
     width:100%; 
     height:100%;
+    z-index: 2;
 }
 #video{
     position:absolute; 
@@ -140,6 +145,18 @@ h1{
     border-radius:12px; 
     font-weight:700; 
     letter-spacing:.5px
+}
+.combo-label {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 60px;
+  font-weight: 900;
+  color: rgba(182, 200, 238, 0.3);
+  z-index: 1; 
+  pointer-events: none;
+  user-select: none;
 }
 canvas {
   image-rendering: crisp-edges;

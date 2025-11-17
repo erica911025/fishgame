@@ -23,6 +23,7 @@
       <label class="row"><input id="mirrorChk" type="checkbox" checked> 🪞 鏡像模式</label>
       <div class="row">分數：<b id="score">0</b></div>
       <div class="row">稱號：<b id="rankNow">—</b> <span id="rankNext"></span></div>
+      <div class="row" id="rankHint" style="font-size: 12px; opacity: .8;"></div>
       <div class="row">時間：<b id="timeLeft">60</b> s</div>
       <div class="row">FPS：<b id="fps">—</b></div>
       <div class="row">撈網耐久</div>
@@ -31,24 +32,24 @@
       
     </div>
 
-    <div id="score" style="margin: 20px 0;" >
+    <div id="score" style="margin: 10px 0;" >
       <b >--- 分數計算 ---</b>
       <div>
-        <p><img src="/fish/image/fish1.png" alt="" style="width: 25px; height: 25px;">：+1分</p>
-        <p><img src="/fish/image/shrimp1.png" alt="" style="width: 25px; height: 25px;">：+1分</p>
-        <p><img src="/fish/image/fish2.png" alt="" style="width: 25px; height: 25px;">：+2分</p>
-        <p><img src="/fish/image/fish3.png" alt="" style="width: 25px; height: 25px;">：+3分</p>
-        <p><img src="/fish/image/turtle3.png" alt="" style="width: 25px; height: 25px;">：+3分</p>
-        <p><img src="/fish/image/fish4.png" alt="" style="width: 25px; height: 25px;">：+4分</p>
-        <p><img src="/fish/image/trash-1.png" alt="" style="width: 25px; height: 25px;">：-1分</p>
-        <p><img src="/fish/image/trash-2.png" alt="" style="width: 25px; height: 25px;">：-2分</p>
-        <p><img src="/fish/image/time.png" alt="" style="width: 25px; height: 25px;">：時間+5</p>
-        <p><img src="/fish/image/treasure.png" alt="" style="width: 25px; height: 25px;">：耐久+5</p>
+        <p><img src="image/fish1.png" alt="" style="width: 25px; height: 25px;">：+1分</p>
+        <p><img src="image/shrimp1.png" alt="" style="width: 25px; height: 25px;">：+1分</p>
+        <p><img src="image/fish2.png" alt="" style="width: 25px; height: 25px;">：+2分</p>
+        <p><img src="image/fish3.png" alt="" style="width: 25px; height: 25px;">：+3分</p>
+        <p><img src="image/turtle3.png" alt="" style="width: 25px; height: 25px;">：+3分</p>
+        <p><img src="image/fish4.png" alt="" style="width: 25px; height: 25px;">：+4分</p>
+        <p><img src="image/trash-1.png" alt="" style="width: 25px; height: 25px;">：-1分</p>
+        <p><img src="image/trash-2.png" alt="" style="width: 25px; height: 25px;">：-2分</p>
+        <p><img src="image/time.png" alt="" style="width: 25px; height: 25px;">：時間+5</p>
+        <p><img src="image/treasure.png" alt="" style="width: 25px; height: 25px;">：耐久+5</p>
       </div>
     </div>
 
 
-    <div id="ranks" style="margin: 20px 0;">
+    <div id="ranks" style="margin: 10px 0;">
       <b>--- 稱號 ---</b>
       <p>0分：新手撈手</p>
       <p>10分：撈魚學徒</p>
@@ -59,6 +60,7 @@
   </aside>
 
   <main id="stageWrap">
+    <div id="combo" class="combo-label"></div>
     <canvas id="stage"></canvas>
     <canvas id="fx"></canvas>
     <video id="video" playsinline muted style="position:absolute;right:12px;bottom:12px;width:240px;border-radius:12px;opacity:.25"></video>
@@ -68,7 +70,7 @@
     </div>
     
     <!-- 結算 -->
-    <div id="modalMask" style="display:none;position:absolute;inset:0;background:rgba(0,0,0,.55);align-items:center;justify-content:center">
+    <div id="modalMask" style="display:none;position:absolute;inset:0;background:rgba(0,0,0,.55);align-items:center;justify-content:center;z-index:20">
       <div style="background:#0f172a;border-radius:16px;padding:24px 28px;width:min(520px,90%)">
         <h2 id="resultTitle" style="margin:0 0 8px">時間到！</h2>
         <p id="resultLine" style="margin:0 0 4px">分數 0｜稱號 —</p>

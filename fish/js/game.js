@@ -6,8 +6,8 @@ import { maybeSpawnChest, stepItems, drawItems } from './items.js';
 import { maybeSpawnObstacles, stepObstacles, drawObstacles } from './obstacles.js';
 import { drawNet } from './hand.js';
 import { startCamera } from './camera.js';
-import { TARGET_FISH_COUNT, GAME_TIME } from './config.js';
-import { updateTimeHUD, updateDurabilityHUD, updateRankHUD, updateGameInfoHUD, bindEndGame, showResultModal } from './hud.js';
+import { TARGET_FISH_COUNT, GAME_TIME, COMBO_TIMEOUT } from './config.js';
+import { updateTimeHUD, updateDurabilityHUD, updateRankHUD, updateGameInfoHUD,  bindEndGame, showResultModal, updateMissHint } from './hud.js';
 
 const canvas = document.getElementById('stage');
 const fx = document.getElementById('fx');
@@ -17,9 +17,11 @@ let tId=null;
 
 export function resetGame(){
   state.score=0; state.hits=0; state.tLeft=GAME_TIME;
+  state.comboCount = 0; state.comboTime  = 0; state.maxCombo   = 0; // 連擊重設
   state.durability=1; state.failed=false;
+  state.missStreak = 0; state.caughtThisPinch = false;
   state.fish.length=0; state.items.length=0; state.obstacles.length=0;
-  updateTimeHUD(); updateDurabilityHUD(); updateRankHUD(); updateGameInfoHUD();
+  updateTimeHUD(); updateDurabilityHUD(); updateRankHUD(); updateGameInfoHUD();updateMissHint(); 
 }
 export async function startGame({ paused = false } = {}){
   resetGame();
@@ -59,10 +61,14 @@ bindEndGame(endGame);
 
 function loop(){
   if (state.paused) {
-  requestAnimationFrame(loop);
-  return;
-}
-  if(!state.running) return;
+    requestAnimationFrame(loop);
+    return;
+  }
+  if (!state.running) return;
+
+  // 先記住這一幀「進來前」手是不是捏著
+  const wasPinch = state.hand.pinch;
+
   ctx.clearRect(0,0,canvas.width,canvas.height);
 
   ensureFishCount(canvas);
@@ -71,30 +77,95 @@ function loop(){
 
   drawNet(ctx);
 
-  // 撈魚 + 扣耐久（捏著才算）
-  if(state.hand.pinch){
-    for(let i=state.fish.length-1; i>=0; i--){
+  const dt = 0.016; // 每幀約 16ms(同spawn 道具)
+
+  // Combo 倒數：有連擊時，每幀扣時間
+  if (state.comboCount > 0) {
+    state.comboTime -= dt;
+    if (state.comboTime <= 0) {
+      state.comboTime  = 0;
+      state.comboCount = 0; // 時間到自動斷連擊
+    }
+  }
+
+  // 撈魚 + Combo + 扣耐久（捏著才算）
+  if (state.hand.pinch) {
+    // 這一幀是「剛剛開始捏」的那一瞬間
+    if (!wasPinch) {
+      state.caughtThisPinch = false;
+    }
+
+    let caughtThisFrame = 0;
+
+    for (let i = state.fish.length - 1; i >= 0; i--) {
       const f = state.fish[i];
-      const d = Math.hypot(f.x-state.hand.x, f.y-state.hand.y);
-      if(d < state.hand.radius){
-        state.score++; state.hits++;
-        state.fish.splice(i,1);
+      const d = Math.hypot(f.x - state.hand.x, f.y - state.hand.y);
+
+      if (d < state.hand.radius) {
+        caughtThisFrame++;
+
+        // 撈到魚 → 連擊 +1，並重置連擊倒數時間
+        state.comboCount++;
+        state.comboTime = COMBO_TIMEOUT;
+
+        // 超過 3 隻開始算 combo：加倍得分
+        const isCombo = state.comboCount > 3;   // 第 4 隻開始
+        const gain    = isCombo ? 0.5 : 1;      // combo 時每隻 +0.5 分
+
+        state.score += gain;
+        state.hits++;
+
+        state.fish.splice(i, 1);
       }
     }
+
+    if (caughtThisFrame > 0) {
+      // 這次捏網有撈到魚
+      state.caughtThisPinch = true;
+      state.missStreak = 0;   // 連續 miss 歸零
+      updateMissHint();       // 清掉「慢慢靠近」提示（或顯示升級提示）
+    }
+
+    // 更新最高連擊
+    if (caughtThisFrame > 0 && state.comboCount > state.maxCombo) {
+      state.maxCombo = state.comboCount;
+    }
+
+    // 每幀捏著就扣一點耐久
     state.durability = Math.max(0, state.durability - 0.004);
     updateDurabilityHUD();
     updateRankHUD();
   }
 
-  maybeSpawnChest(0.016, canvas);
-  stepItems(0.016); drawItems(ctx);
+  // ⭐ 檢查「剛放開捏合」這個瞬間
+  if (!state.hand.pinch && wasPinch) {
+    if (!state.caughtThisPinch) {
+      // 這一次捏網過程完全沒撈到 → miss +1
+      state.missStreak++;
+    } else {
+      // 這次有撈到，其實上面已經把 miss 歸零過了，這行可有可無
+      state.missStreak = 0;
+    }
+    state.caughtThisPinch = false;  // 重置，下次再重新計算
+    updateMissHint();               // missStreak 變動後更新提示
+  }
 
-  maybeSpawnObstacles(0.016, canvas);
-  stepObstacles(0.016); drawObstacles(ctx, canvas);
+  maybeSpawnChest(dt, canvas);
+  stepItems(dt); 
+  drawItems(ctx);
+
+  maybeSpawnObstacles(dt, canvas);
+  stepObstacles(dt); 
+  drawObstacles(ctx, canvas);
 
   updateGameInfoHUD();
+
+  // 每幀更新上一次的 pinch 狀態（讓「剛放開」能被偵測到）
+  state.wasPinch = state.hand.pinch;
+
   requestAnimationFrame(loop);
 }
+
 
 // 視窗尺寸改變 → 維持高畫質
 export function resize(){

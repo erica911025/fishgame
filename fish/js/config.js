@@ -1,7 +1,7 @@
 // 可調參數
 export const TARGET_FISH_COUNT = 10;
 export const GAME_TIME = 60;
-
+export const COMBO_TIMEOUT = 3;
 export const PINCH_THRESHOLD_RATIO = 0.06;
 export const PINCH_GRACE_FRAMES = 6;
 export const DECAY_PER_PINCH_FRAME = 0.010;
