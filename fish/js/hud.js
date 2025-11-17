@@ -10,11 +10,13 @@ const hudTime = document.getElementById('hudTime');
 const comboEl = document.getElementById('combo');
 const rankNowEl = document.getElementById('rankNow');
 const rankNextEl = document.getElementById('rankNext');
-
+const rankHint = document.getElementById('rankHint');
 const modalMask = document.getElementById('modalMask');
 const resultTitle = document.getElementById('resultTitle');
 const resultLine = document.getElementById('resultLine');
 const resultHint = document.getElementById('resultHint');
+let missHintTimer = null;
+let hintVisible = false;
 
 export function getRank(s) { let cur = RANKS[0]; for (const r of RANKS) { if (s >= r.min) cur = r; else break; } return cur; }
 export function getNextRank(s) { for (const r of RANKS) { if (s < r.min) return r; } return null; }
@@ -25,12 +27,41 @@ export function updateRankHUD() {
   rankNextEl.textContent = nxt ? `（再 ${nxt.min - state.score} 分升級：${nxt.title}）` : '（最高稱號）';
 }
 export function updateMissHint() {
+  if (!rankHint) return;
+
+  console.log('[updateMissHint] missStreak =', state.missStreak);
+
   if (state.missStreak >= 5) {
     rankHint.textContent = '慢慢靠近魚再捏合，比較容易撈到喔～';
+    rankHint.classList.add('show');
+
+    // 第一次達到條件時才開 timer，不要每次都重開
+    if (!hintVisible) {
+      hintVisible = true;
+      clearTimeout(missHintTimer);
+      missHintTimer = setTimeout(() => {
+        // 3 秒後自動關閉提示，並重置狀態（下一次重新累積）
+        rankHint.classList.remove('show');
+        rankHint.textContent = '';
+        hintVisible = false;
+        state.missStreak = 0;
+      }, 3000);
+    }
   } else {
-    rankHint.textContent = '';
+    // missStreak < 5 的情況
+    // 代表：還沒達到 5 次，或是已經被「撈到魚」歸零
+    if (hintVisible) {
+      // 提示目前正顯示，但 missStreak 被歸零（通常是抓到魚）
+      // → 立刻關掉提示，不等 3 秒
+      rankHint.classList.remove('show');
+      rankHint.textContent = '';
+      hintVisible = false;
+      clearTimeout(missHintTimer);
+      missHintTimer = null;
+    }
   }
 }
+
 export function updateGameInfoHUD() {
   scoreEl.textContent = state.score;
   hudHit.textContent = state.hits;

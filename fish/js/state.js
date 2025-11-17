@@ -11,6 +11,7 @@ export const state = {
   pinchFrames:0, wasPinch:false,
   missStreak: 0,        // 連續沒撈中的次數
   caughtThisPinch: false, // 這一次「捏網」過程中有沒有撈到魚
+  lastMissTime: 0,   //  最近一次 miss 是在第幾秒發生
   // devices
   dpr: 1,
   mirror: true,

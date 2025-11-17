@@ -11,6 +11,7 @@ import { updateTimeHUD, updateDurabilityHUD, updateRankHUD, updateGameInfoHUD,  
 
 const canvas = document.getElementById('stage');
 const fx = document.getElementById('fx');
+const MISS_HINT_WINDOW = 3;
 
 let ctx = setupCanvasSize(canvas);
 let tId=null;
@@ -19,7 +20,7 @@ export function resetGame(){
   state.score=0; state.hits=0; state.tLeft=GAME_TIME;
   state.comboCount = 0; state.comboTime  = 0; state.maxCombo   = 0; // 連擊重設
   state.durability=1; state.failed=false;
-  state.missStreak = 0; state.caughtThisPinch = false;
+  state.missStreak = 0; state.caughtThisPinch = false; state.lastMissTime = 0;
   state.fish.length=0; state.items.length=0; state.obstacles.length=0;
   updateTimeHUD(); updateDurabilityHUD(); updateRankHUD(); updateGameInfoHUD();updateMissHint(); 
 }
@@ -67,7 +68,7 @@ function loop(){
   if (!state.running) return;
 
   // 先記住這一幀「進來前」手是不是捏著
-  const wasPinch = state.hand.pinch;
+  const wasPinch = state.wasPinch;
 
   ctx.clearRect(0,0,canvas.width,canvas.height);
 
@@ -137,18 +138,29 @@ function loop(){
     updateRankHUD();
   }
 
-  // ⭐ 檢查「剛放開捏合」這個瞬間
+  // 檢查「剛放開捏合」這個瞬間
+  
   if (!state.hand.pinch && wasPinch) {
+    const elapsed = GAME_TIME - state.tLeft;  // 這局目前已經過幾秒
+
     if (!state.caughtThisPinch) {
-      // 這一次捏網過程完全沒撈到 → miss +1
-      state.missStreak++;
+      // 這一次完全沒撈到 → 判斷是不是「短時間內的連續 miss」
+      if (elapsed - state.lastMissTime > MISS_HINT_WINDOW) {
+        // 上一次 miss 已經是很久以前了 → 重新開始算
+        state.missStreak = 1;
+      } else {
+        // 還在短時間內 → 累加 miss 次數
+        state.missStreak++;
+      }
+      state.lastMissTime = elapsed;
     } else {
-      // 這次有撈到，其實上面已經把 miss 歸零過了，這行可有可無
+      // 這次有撈到，連續 miss 直接歸零
       state.missStreak = 0;
-    }
-    state.caughtThisPinch = false;  // 重置，下次再重新計算
-    updateMissHint();               // missStreak 變動後更新提示
   }
+
+  state.caughtThisPinch = false;
+  updateMissHint();
+}
 
   maybeSpawnChest(dt, canvas);
   stepItems(dt); 

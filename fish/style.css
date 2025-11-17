@@ -158,6 +158,25 @@ h1{
   pointer-events: none;
   user-select: none;
 }
+.rank-hint {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 42px;
+  font-weight: 900;
+  color: rgba(255, 255, 255, 0.95);  /* ⭐ 白色大字 */
+  /* text-shadow: 0 0 10px rgba(0,0,0,0.7); ⭐ 黑陰影 */
+  /* z-index: 99999; */
+  text-align: center;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.25s ease;
+}
+
+.rank-hint.show {
+  opacity: 1;
+}
 canvas {
   image-rendering: crisp-edges;
   image-rendering: pixelated;
