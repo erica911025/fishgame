@@ -26,7 +26,7 @@ export function drawItems(ctx){
     if(state.hand.visible && state.hand.pinch){
       const d = Math.hypot(it.x-state.hand.x, it.y-state.hand.y);
       if(d < state.hand.radius){
-        if(it.type==='time'){ state.tLeft = Math.min(999, state.tLeft+8); updateTimeHUD(); }
+        if(it.type==='time'){ state.tLeft = Math.min(999, state.tLeft+5); updateTimeHUD(); }
         else{ state.durability = Math.min(1, state.durability+0.2); updateDurabilityHUD(); }
         it.life = 0;
       }
