@@ -17,8 +17,8 @@ export const FISH_TYPES = [
   { key:'fish2', img:'image/fish2.png', score:2, speed:1.05, size:[52,52] },
   { key:'fish3', img:'image/fish3.png', score:3, speed:1.2,  size:[54,54] },
   { key:'fish4', img:'image/fish4.png', score:4, speed:1.5, size:[58,58] },
-  { key:'shrimp1', img:'image/shrimp1.png', score:5, speed:0.9, size:[56,56] },
-  { key:'turtle3', img:'image/turtle3.png', score:5, speed:0.8, size:[70,70] },
+  { key:'shrimp1', img:'image/shrimp1.png', score:1, speed:0.9, size:[56,56] },
+  { key:'turtle3', img:'image/turtle3.png', score:3, speed:0.8, size:[70,70] },
 ];
 
 export const IMG_TIME = 'image/time.png';

@@ -109,9 +109,11 @@ function loop(){
         state.comboCount++;
         state.comboTime = COMBO_TIMEOUT;
 
-        // 超過 3 隻開始算 combo：加倍得分
-        const isCombo = state.comboCount > 3;   // 第 4 隻開始
-        const gain    = isCombo ? 0.5 : 1;      // combo 時每隻 +0.5 分
+        // // 超過 3 隻開始算 combo：加倍得分
+        const baseScore = (typeof f.score === 'number') ? f.score : 1;
+        const isCombo = state.comboCount > 2;   // 第 3 隻開始算 combo
+        const bonus   = isCombo ? 1 : 0;        // 有 combo 時額外 +1 分
+        const gain    = baseScore + bonus;
 
         state.score += gain;
         state.hits++;
