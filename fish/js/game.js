@@ -7,7 +7,7 @@ import { maybeSpawnObstacles, stepObstacles, drawObstacles } from './obstacles.j
 import { drawNet } from './hand.js';
 import { startCamera } from './camera.js';
 import { TARGET_FISH_COUNT, GAME_TIME, COMBO_TIMEOUT } from './config.js';
-import { updateTimeHUD, updateDurabilityHUD, updateRankHUD, updateGameInfoHUD,  bindEndGame, showResultModal, updateMissHint } from './hud.js';
+import { updateTimeHUD, updateDurabilityHUD, updateRankHUD, updateGameInfoHUD,  bindEndGame, showResultModal, updateMissHint, damageNet } from './hud.js';
 
 const canvas = document.getElementById('stage');
 const fx = document.getElementById('fx');
@@ -133,8 +133,7 @@ function loop(){
     }
 
     // 每幀捏著就扣一點耐久
-    state.durability = Math.max(0, state.durability - 0.004);
-    updateDurabilityHUD();
+    damageNet(0.004);
     updateRankHUD();
   }
 

@@ -1,7 +1,7 @@
 import { state } from './state.js';
 import { BUBBLE_SPAWN_PPS, TRASH_SPAWN_PPS, TRASH_TYPES } from './config.js';
 import { ASSETS } from './assets.js';
-import { updateDurabilityHUD } from './hud.js';
+import { updateDurabilityHUD} from './hud.js';
 
 export function maybeSpawnObstacles(dt, canvas){
   if(Math.random() < BUBBLE_SPAWN_PPS*dt){
