@@ -24,6 +24,25 @@ export function resetGame(){
   state.fish.length=0; state.items.length=0; state.obstacles.length=0;
   updateTimeHUD(); updateDurabilityHUD(); updateRankHUD(); updateGameInfoHUD();updateMissHint(); 
 }
+export function resetToInitial() {
+  // 停止遊戲與計時器
+  state.running = false; state.paused = false; clearInterval(tId);
+  // 清空場上的東西
+  state.fish.length = 0; state.items.length = 0; state.obstacles.length = 0;
+  // 數值回到初始顯示狀態
+  state.score = 0; state.hits = 0; state.tLeft = GAME_TIME;
+  state.comboCount = 0; state.comboTime = 0; state.maxCombo = 0;
+  // 一開始耐久條是「沒有顏色」，所以設為 0
+  state.durability = 0; state.failed = false; state.missStreak = 0;
+  state.caughtThisPinch = false; state.lastMissTime = 0; state.fps = 0;
+  // 更新 HUD
+  updateTimeHUD(); updateDurabilityHUD(); updateRankHUD(); updateGameInfoHUD(); updateMissHint();
+  // 清空畫面
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  const fxCtx = fx.getContext('2d');
+  fxCtx.clearRect(0, 0, fx.width, fx.height);
+}
+
 export async function startGame({ paused = false } = {}){
   resetGame();
   await startCamera(canvas);

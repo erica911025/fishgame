@@ -1,4 +1,4 @@
-import { startGame, resetGame, resize, runCountdown, resumeGame } from './game.js';
+import { startGame, resetGame, resize, runCountdown, resumeGame, resetToInitial } from './game.js';
 import { state } from './state.js';
 import { bindMouseNet } from './hand.js';
 import { hideResultModal } from './hud.js';
@@ -13,7 +13,7 @@ const canvas = document.getElementById('stage');
 bindMouseNet(canvas); // 滑鼠撈網 fallback
 resize();
 
-btnReset.addEventListener('click', ()=> resetGame());
+btnReset.addEventListener('click', ()=> resetToInitial());
 btnClose.addEventListener('click', ()=> {hideResultModal();});
 mirrorChk.addEventListener("change", () => {
     state.mirror = mirrorChk.checked;
