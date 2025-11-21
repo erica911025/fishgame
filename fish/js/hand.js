@@ -67,21 +67,18 @@ export function onHandResults(results, canvas){
     const pinchThreshold = Math.min(W,H) * PINCH_THRESHOLD_RATIO;
     const isPinch = dist < pinchThreshold;
 
-    if(isPinch){ state.pinchFrames++; }
-    else{
-      if(state.wasPinch) applyPinchDecay();
-      state.pinchFrames=0;
+    if (isPinch) {
+      // 持續捏住：累積捏合幀數
+      state.pinchFrames++;
+
+      state.wasPinch = isPinch;
+      state.hand.pinch = isPinch;
     }
-    state.wasPinch=isPinch; state.hand.pinch=isPinch;
-  }else{
-    if(state.wasPinch) applyPinchDecay();
-    state.pinchFrames=0; state.wasPinch=false;
-    // 不把 visible 設為 false，讓使用者看得到網
-    state.hand.visible=true;
+  } else {
+    // 沒偵測到手勢：不要額外扣耐久，只重置狀態
+    state.pinchFrames = 0;
+    state.wasPinch = false;
+    // 讓使用者看得到網
+    state.hand.visible = true;
   }
-}
-function applyPinchDecay(){
-  const excess = Math.max(0, state.pinchFrames-PINCH_GRACE_FRAMES);
-  const decay  = Math.min(PINCH_MAX_DECAY, excess*DECAY_PER_PINCH_FRAME);
-  if(decay>0) damageNet(decay);
 }

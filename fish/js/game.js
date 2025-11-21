@@ -135,8 +135,10 @@ function loop(){
     }
 
     // 每幀捏著就扣一點耐久
+    if (state.hand.pinch) {
     damageNet(0.004);
     updateRankHUD();
+    }
   }
 
   // 檢查「剛放開捏合」這個瞬間

@@ -3,10 +3,7 @@ export const TARGET_FISH_COUNT = 10;
 export const GAME_TIME = 60;
 export const COMBO_TIMEOUT = 3;
 export const PINCH_THRESHOLD_RATIO = 0.06;
-export const PINCH_GRACE_FRAMES = 6;
-export const DECAY_PER_PINCH_FRAME = 0.010;
-export const PINCH_MAX_DECAY = 0.18;
-export const DECAY_PER_CATCH = 0.08;
+export const PINCH_GRACE_FRAMES = 8;
 
 // 高畫質：會依 DPR 放大
 export const DPR_LIMIT = 2; // 2~3 之間都可
