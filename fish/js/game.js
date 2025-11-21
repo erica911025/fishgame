@@ -136,8 +136,8 @@ function loop(){
 
     // 每幀捏著就扣一點耐久
     if (state.hand.pinch) {
-    damageNet(0.004);
-    updateRankHUD();
+      damageNet(0.004);
+      updateRankHUD();
     }
   }
 

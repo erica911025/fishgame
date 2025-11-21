@@ -1,5 +1,5 @@
 import { state } from './state.js';
-import { PINCH_THRESHOLD_RATIO, PINCH_GRACE_FRAMES, DECAY_PER_PINCH_FRAME, PINCH_MAX_DECAY } from './config.js';
+import { PINCH_THRESHOLD_RATIO} from './config.js';
 import { damageNet } from './hud.js';
 
 export function bindMouseNet(canvas){
@@ -70,10 +70,9 @@ export function onHandResults(results, canvas){
     if (isPinch) {
       // 持續捏住：累積捏合幀數
       state.pinchFrames++;
-
-      state.wasPinch = isPinch;
-      state.hand.pinch = isPinch;
     }
+    state.wasPinch = isPinch;
+    state.hand.pinch = isPinch;
   } else {
     // 沒偵測到手勢：不要額外扣耐久，只重置狀態
     state.pinchFrames = 0;
