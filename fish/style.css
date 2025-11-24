@@ -225,6 +225,37 @@ canvas {
     margin: 5px;
 }
 
-#ranks p{
-    margin: 5px;
+#info{
+    width: 15px;
+}
+
+.rank-wrap {
+  position: relative;
+  display: inline-block; /* 讓 tooltip 跟稱號區域綁在一起 */
+}
+
+/* tooltip 預設隱藏 */
+#ranks {
+  display: none;
+  position: absolute;
+  top: 0;
+  left: 110%;
+  margin-top: 6px;
+  padding: 8px 12px;
+  background: rgba(0, 0, 0, 0.8);
+  color: #fff;
+  border-radius: 8px;
+  font-size: 14px;
+  line-height: 1.4;
+  z-index: 100;
+  white-space: nowrap; /* 不想換行可以留著，要自動換行就刪掉 */
+}
+
+/* 滑到 info 圖示時顯示 tooltip */
+.rank-wrap #info {
+  cursor: pointer;
+}
+
+.rank-wrap #info:hover + #ranks {
+  display: block;
 }
