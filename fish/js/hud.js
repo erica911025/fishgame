@@ -68,22 +68,22 @@ export function updateGameInfoHUD() {
   hudHit.textContent = state.hits;
   fpsEl.textContent = Math.round(state.fps || 0);
 
-  // ===== COMBO 顯示效果 =====
-  if (state.comboCount >= 2 && state.comboTime > 0) {
-    comboEl.style.opacity = 1;
-    comboEl.textContent = `${state.comboCount} COMBO!`;
+  // // ===== COMBO 顯示效果 =====
+  // if (state.comboCount >= 2 && state.comboTime > 0) {
+  //   comboEl.style.opacity = 1;
+  //   comboEl.textContent = `${state.comboCount} COMBO!`;
 
-    // 給不同段數的 combo 不同 tier（之後可以用 data-tier 在 CSS 做漸層）
-    let tier = 1;
-    if (state.comboCount >= 10) tier = 3;
-    else if (state.comboCount >= 5) tier = 2;
-    comboEl.dataset.tier = tier;
+  //   // 給不同段數的 combo 不同 tier（之後可以用 data-tier 在 CSS 做漸層）
+  //   let tier = 1;
+  //   if (state.comboCount >= 10) tier = 3;
+  //   else if (state.comboCount >= 5) tier = 2;
+  //   comboEl.dataset.tier = tier;
 
-    comboEl.classList.add('combo-show');
-  } else {
-    comboEl.style.opacity = 0;
-    comboEl.classList.remove('combo-show');
-  }
+  //   comboEl.classList.add('combo-show');
+  // } else {
+  //   comboEl.style.opacity = 0;
+  //   comboEl.classList.remove('combo-show');
+  // }
 }
 
 
@@ -109,29 +109,31 @@ export function showResultModal(broken) {
 export function hideResultModal() { modalMask.style.display = 'none'; }
 
 // ====== COMBO 華麗特效：爆光 + 飄字 ======
+// ====== COMBO 華麗特效：在撈網附近飄字 ======
 export function triggerComboFX(combo) {
-  // 只對 3 連擊以上開啟特效（避免一開始就狂閃）
+  // 3 連擊以上再顯示，避免一開始一直閃
   if (combo < 3) return;
 
-  // 讓 #combo 做一次爆炸縮放動畫
-  comboEl.classList.remove('combo-pop'); // 先拔掉
-  // 強制 reflow 讓 animation 能重新觸發
-  void comboEl.offsetWidth;
-  comboEl.classList.add('combo-pop');
+  const canvas = document.getElementById('stage'); // 你的主畫布 id
+  if (!canvas) return;
 
-  // 再做一個一次性的飄字
+  const rect = canvas.getBoundingClientRect();
+
+  // 撈網在畫布內的座標（state.hand.x,y 是以 canvas 為基準）
+  const x = rect.left + state.hand.x;
+  const y = rect.top + state.hand.y;
+
+  // 建立一次性的飄字元素
   const float = document.createElement('div');
   float.className = 'combo-float';
   float.textContent = `${combo} COMBO!!`;
 
-  // 放在 combo 文字附近
-  const rect = comboEl.getBoundingClientRect();
-  float.style.left = rect.left + rect.width / 2 + 'px';
-  float.style.top = rect.top + 'px';
+  float.style.left = x + 'px';
+  float.style.top  = y + 'px';
 
   document.body.appendChild(float);
 
-  // 飄完就移除
+  // 動畫結束後移除
   setTimeout(() => {
     float.remove();
   }, 700);

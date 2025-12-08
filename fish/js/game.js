@@ -109,14 +109,14 @@ function loop(){
 
   const dt = 0.016; // 每幀約 16ms(同spawn 道具)
 
-  // Combo 倒數：有連擊時，每幀扣時間
-  if (state.comboCount > 0) {
-    state.comboTime -= dt;
-    if (state.comboTime <= 0) {
-      state.comboTime  = 0;
-      state.comboCount = 0; // 時間到自動斷連擊
-    }
-  }
+  // // Combo 倒數：有連擊時，每幀扣時間
+  // if (state.comboCount > 0) {
+  //   state.comboTime -= dt;
+  //   if (state.comboTime <= 0) {
+  //     state.comboTime  = 0;
+  //     state.comboCount = 0; // 時間到自動斷連擊
+  //   }
+  // }
 
   // 撈魚 + Combo + 扣耐久（捏著才算）
   if (state.hand.pinch) {
@@ -173,12 +173,15 @@ function loop(){
   }
 
   // 檢查「剛放開捏合」這個瞬間
-  
   if (!state.hand.pinch && wasPinch) {
     const elapsed = GAME_TIME - state.tLeft;  // 這局目前已經過幾秒
 
     if (!state.caughtThisPinch) {
-      // 這一次完全沒撈到 → 判斷是不是「短時間內的連續 miss」
+      // ✅ 這一次完全沒撈到（抓空）→ 連擊直接重置
+      state.comboCount = 0;
+      state.comboTime  = 0;
+
+      // 照原本邏輯更新 missStreak，給提示用
       if (elapsed - state.lastMissTime > MISS_HINT_WINDOW) {
         // 上一次 miss 已經是很久以前了 → 重新開始算
         state.missStreak = 1;
@@ -190,11 +193,15 @@ function loop(){
     } else {
       // 這次有撈到，連續 miss 直接歸零
       state.missStreak = 0;
+    }
+
+    // 為下一次捏網重置旗標
+    state.caughtThisPinch = false;
+    updateMissHint();
   }
 
-  state.caughtThisPinch = false;
-  updateMissHint();
-}
+
+
 
   maybeSpawnChest(dt, canvas);
   stepItems(dt); 
