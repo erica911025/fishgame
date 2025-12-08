@@ -63,19 +63,29 @@ export function updateMissHint() {
 }
 
 export function updateGameInfoHUD() {
+  // 分數、命中、FPS
   scoreEl.textContent = state.score;
   hudHit.textContent = state.hits;
-  fpsEl.textContent = state.fps ? state.fps.toFixed(0) : '—';
+  fpsEl.textContent = Math.round(state.fps || 0);
 
-  // Combo 顯示：連擊數 > 2 才顯示（至少連三隻）
-  if (comboEl) {
-    if (state.comboCount > 2) {
-      comboEl.textContent = `COMBO x${state.comboCount}`;
-    } else {
-      comboEl.textContent = '';
-    }
+  // ===== COMBO 顯示效果 =====
+  if (state.comboCount >= 2 && state.comboTime > 0) {
+    comboEl.style.opacity = 1;
+    comboEl.textContent = `${state.comboCount} COMBO!`;
+
+    // 給不同段數的 combo 不同 tier（之後可以用 data-tier 在 CSS 做漸層）
+    let tier = 1;
+    if (state.comboCount >= 10) tier = 3;
+    else if (state.comboCount >= 5) tier = 2;
+    comboEl.dataset.tier = tier;
+
+    comboEl.classList.add('combo-show');
+  } else {
+    comboEl.style.opacity = 0;
+    comboEl.classList.remove('combo-show');
   }
 }
+
 
 export function updateTimeHUD() { timeEl.textContent = state.tLeft; hudTime.textContent = state.tLeft; }
 export function updateDurabilityHUD() { durFill.style.width = `${state.durability * 100}%`; }
@@ -97,3 +107,32 @@ export function showResultModal(broken) {
   modalMask.style.display = 'flex';
 }
 export function hideResultModal() { modalMask.style.display = 'none'; }
+
+// ====== COMBO 華麗特效：爆光 + 飄字 ======
+export function triggerComboFX(combo) {
+  // 只對 3 連擊以上開啟特效（避免一開始就狂閃）
+  if (combo < 3) return;
+
+  // 讓 #combo 做一次爆炸縮放動畫
+  comboEl.classList.remove('combo-pop'); // 先拔掉
+  // 強制 reflow 讓 animation 能重新觸發
+  void comboEl.offsetWidth;
+  comboEl.classList.add('combo-pop');
+
+  // 再做一個一次性的飄字
+  const float = document.createElement('div');
+  float.className = 'combo-float';
+  float.textContent = `${combo} COMBO!!`;
+
+  // 放在 combo 文字附近
+  const rect = comboEl.getBoundingClientRect();
+  float.style.left = rect.left + rect.width / 2 + 'px';
+  float.style.top = rect.top + 'px';
+
+  document.body.appendChild(float);
+
+  // 飄完就移除
+  setTimeout(() => {
+    float.remove();
+  }, 700);
+}

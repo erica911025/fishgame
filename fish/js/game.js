@@ -7,7 +7,17 @@ import { maybeSpawnObstacles, stepObstacles, drawObstacles } from './obstacles.j
 import { drawNet } from './hand.js';
 import { startCamera } from './camera.js';
 import { TARGET_FISH_COUNT, GAME_TIME, COMBO_TIMEOUT } from './config.js';
-import { updateTimeHUD, updateDurabilityHUD, updateRankHUD, updateGameInfoHUD,  bindEndGame, showResultModal, updateMissHint, damageNet } from './hud.js';
+import {
+  updateTimeHUD,
+  updateDurabilityHUD,
+  updateRankHUD,
+  updateGameInfoHUD,
+  showResultModal,
+  updateMissHint,
+  damageNet,
+  triggerComboFX,
+  bindEndGame      // ★ 新增
+} from './hud.js';
 
 const canvas = document.getElementById('stage');
 const fx = document.getElementById('fx');
@@ -127,6 +137,8 @@ function loop(){
         // 撈到魚 → 連擊 +1，並重置連擊倒數時間
         state.comboCount++;
         state.comboTime = COMBO_TIMEOUT;
+
+        triggerComboFX(state.comboCount);
 
         // // 超過 3 隻開始算 combo：加倍得分
         const baseScore = (typeof f.score === 'number') ? f.score : 1;

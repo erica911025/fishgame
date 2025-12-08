@@ -259,3 +259,101 @@ canvas {
 .rank-wrap #info:hover + #ranks {
   display: block;
 }
+
+/* COMBO 文字本體 */
+#combo {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  font-size: 32px;
+  font-weight: 900;
+  letter-spacing: 2px;
+  color: #ffffff;
+  opacity: 0;
+  transform: scale(0.6);
+  pointer-events: none;
+  transition: opacity .15s ease-out;
+
+  text-shadow:
+    0 0 6px rgba(255,255,255,.8),
+    0 0 16px rgba(0,255,255,.9),
+    0 0 32px rgba(0,128,255,.8);
+}
+
+/* 有 combo 時常駐顯示 */
+#combo.combo-show {
+  opacity: 1;
+}
+
+/* 每次 combo 成功時觸發的彈出 + 光暈動畫 */
+#combo.combo-pop {
+  animation: combo-pop .35s ease-out, combo-glow .8s ease-out;
+}
+
+/* 爆炸縮放 */
+@keyframes combo-pop {
+  0% {
+    transform: translateY(0) scale(.3);
+    opacity: 0;
+  }
+  40% {
+    transform: translateY(-6px) scale(1.3);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+  }
+}
+
+/* 光暈閃一下 */
+@keyframes combo-glow {
+  0% {
+    text-shadow:
+      0 0 4px rgba(255,255,255,.2),
+      0 0 10px rgba(0,255,255,.6);
+  }
+  50% {
+    text-shadow:
+      0 0 10px rgba(255,255,255,1),
+      0 0 25px rgba(0,255,255,1),
+      0 0 40px rgba(0,128,255,1);
+  }
+  100% {
+    text-shadow:
+      0 0 6px rgba(255,255,255,.6),
+      0 0 16px rgba(0,255,255,.7);
+  }
+}
+
+/* 飄起來的一次性 COMBO 文字 */
+.combo-float {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  font-size: 24px;
+  font-weight: 900;
+  color: #ffe66d;
+  pointer-events: none;
+
+  text-shadow:
+    0 0 6px rgba(255,255,255,1),
+    0 0 18px rgba(255,153,0,1);
+
+  animation: combo-float .7s ease-out forwards;
+}
+
+/* 往上飄、放大、淡出 */
+@keyframes combo-float {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -10px) scale(.3);
+  }
+  25% {
+    opacity: 1;
+    transform: translate(-50%, -40px) scale(1.1);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -90px) scale(.9);
+  }
+}
