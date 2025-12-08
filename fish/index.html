@@ -8,6 +8,18 @@
   <link rel="stylesheet" href="style.css" />
   <script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.min.js"></script>
+  <script src="config.js"></script>
+  <script src="assets.js"></script>
+  <script src="state.js"></script>
+  <script src="fish.js"></script>
+  <script src="items.js"></script>
+  <script src="obstacles.js"></script>
+  <script src="hand.js"></script>
+  <script src="canvas.js"></script>
+  <script src="hud.js"></script>
+  <script src="game.js"></script>
+  <script src="main.js"></script>
+
 </head>
 <body>
 <div id="wrap">
@@ -23,6 +35,18 @@
         <input id="mirrorChk" type="checkbox" checked>
         🪞 Mirror Mode
       </label>
+
+      <!-- 🎨 Theme Selector -->
+<div class="row">
+  <label for="themeSelect">🎨 Theme</label>
+  <select id="themeSelect" class="select">
+    <option value="night-cozy">Night · Cozy（預設）</option>
+    <option value="night-spooky">Night · Spooky</option>
+    <option value="day-cozy">Day · Cozy</option>
+    <option value="day-spooky">Day · Spooky</option>
+  </select>
+</div>
+
 
       <div class="row">Score: <b id="score">0</b></div>
       

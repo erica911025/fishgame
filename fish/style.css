@@ -357,3 +357,61 @@ canvas {
     transform: translate(-50%, -90px) scale(.9);
   }
 }
+
+.select {
+  padding: 6px 8px;
+  border-radius: 8px;
+  border: 1px solid rgba(255,255,255,.3);
+  background: #0f172a;
+  color: #e5e7eb;
+}
+
+/* 🎨 Night · Cozy（預設：現在的風格） */
+body.theme-night-cozy {
+  background: radial-gradient(1000px 600px at 50% 20%, #687c9c 0%, #5a77a7 60%, #21345c 100%);
+  color: #ffffff;
+}
+body.theme-night-cozy #stageWrap {
+  background: linear-gradient(180deg, rgba(96,165,250,.15), rgba(59,130,246,.05));
+}
+body.theme-night-cozy #panel {
+  background: var(--panel);
+}
+
+/* 🎨 Night · Spooky：紫 + 墨綠、比較陰森的夜晚 */
+body.theme-night-spooky {
+  background: radial-gradient(900px 540px at 50% 15%, #2b1b3f 0%, #120918 55%, #020308 100%);
+  color: #f9fafb;
+}
+body.theme-night-spooky #stageWrap {
+  background: radial-gradient(800px 600px at 50% 20%, rgba(55,65,81,0.6) 0%, rgba(15,23,42,0.95) 60%);
+}
+body.theme-night-spooky #panel {
+  background: rgba(15,23,42,0.95);
+}
+
+/* 🎨 Day · Cozy：明亮藍天 + 淡黃色水面，溫暖可愛 */
+body.theme-day-cozy {
+  background: radial-gradient(1100px 700px at 50% 0%, #e0f2fe 0%, #bae6fd 40%, #7dd3fc 100%);
+  color: #0f172a;
+}
+body.theme-day-cozy #stageWrap {
+  background: linear-gradient(180deg, rgba(191,219,254,0.9), rgba(254,249,195,0.7));
+}
+body.theme-day-cozy #panel {
+  background: rgba(255,255,255,0.85);
+  color: #111827;
+}
+
+/* 🎨 Day · Spooky：灰霧 + 偏綠的水色，白天但有陰森感 */
+body.theme-day-spooky {
+  background: radial-gradient(1000px 650px at 50% 0%, #e5e7eb 0%, #9ca3af 40%, #4b5563 100%);
+  color: #111827;
+}
+body.theme-day-spooky #stageWrap {
+  background: linear-gradient(180deg, rgba(148,163,184,0.9), rgba(22,101,52,0.7));
+}
+body.theme-day-spooky #panel {
+  background: rgba(31,41,55,0.88);
+  color: #e5e7eb;
+}

@@ -20,3 +20,24 @@ export const state = {
   dx: 0,
   dy: 0
 };
+
+export const themeFilters = {
+  'night-cozy': {
+    fish: "brightness(0.85) saturate(1.2)",
+    net:  "brightness(0.9) saturate(1.1)"
+  },
+  'night-spooky': {
+    fish: "brightness(0.5) saturate(0.4) hue-rotate(250deg)",
+    net:  "brightness(0.6) saturate(0.5) hue-rotate(220deg)"
+  },
+  'day-cozy': {
+    fish: "brightness(1.2) saturate(1.3)",
+    net:  "brightness(1.1) saturate(1.2)"
+  },
+  'day-spooky': {
+    fish: "brightness(0.75) saturate(0.6) hue-rotate(180deg)",
+    net:  "brightness(0.7) saturate(0.6) hue-rotate(150deg)"
+  }
+};
+
+export let currentTheme = 'night-cozy';
