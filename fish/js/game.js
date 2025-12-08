@@ -233,7 +233,7 @@ export async function runCountdown() {
   const overlay = document.getElementById("countdownOverlay");
   const text = document.getElementById("countdownText");
 
-  const seq = ["3", "2", "1", "開始!"];
+  const seq = ["3", "2", "1", "START!"];
 
   overlay.classList.remove("hide");
 
