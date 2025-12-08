@@ -41,7 +41,7 @@ export function onHandResults(results, canvas){
   const W = canvas.width/state.dpr, H = canvas.height/state.dpr;
   if(results.multiHandLandmarks && results.multiHandLandmarks.length){
     const lm = results.multiHandLandmarks[0], tip=lm[8], thumb=lm[4];
-    const rawX = tip.x, rawY = tip.y;
+    const rawX = thumb.x, rawY = thumb.y;
     state.hand.x = (state.mirror ? (1-rawX):rawX) * W;
     state.hand.y = rawY * H;
     state.hand.visible = true;
