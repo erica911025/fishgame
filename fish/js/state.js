@@ -7,6 +7,7 @@ export const state = {
   tLeft:60, fps:0,
   durability:1, failed:false,
   fish:[], items:[], obstacles:[],
+  fx: [],
   hand:{ x:0,y:0, radius:60, pinch:false, visible:false, speed: 0 },
   pinchFrames:0, wasPinch:false,
   missStreak: 0,        // 連續沒撈中的次數
@@ -18,7 +19,8 @@ export const state = {
   cameraStarted:false,
   hands:null,
   dx: 0,
-  dy: 0
+  dy: 0,
+  lastWaterTime: 0,  
 };
 
 export const themeFilters = {

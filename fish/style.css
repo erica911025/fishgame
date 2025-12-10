@@ -415,3 +415,13 @@ body.theme-day-spooky #panel {
   background: rgba(31,41,55,0.88);
   color: #e5e7eb;
 }
+
+#fx {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none; /* 不擋滑鼠 / 手勢 */
+  z-index: 3;          /* 疊在魚跟撈網上面 */
+}
