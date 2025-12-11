@@ -1,5 +1,5 @@
 :root { 
-    --bg:#0b1220; 
+    --bg:#0b122062; 
     --panel:#111827aa; 
     --accent:#60a5fa; 
     --good:#b91010; 
@@ -7,6 +7,7 @@
     --danger:#875858; 
 
 }
+
 html,body{
     height:100%; 
     margin:0; 
@@ -80,9 +81,11 @@ h1{
     cursor:pointer; 
     padding:10px 12px; 
     border-radius:10px; 
-    border:1px solid rgba(255,255,255,.15); 
-    background:#0f172a; 
-    color:#e5e7eb
+    border:0px solid rgba(119, 89, 89, 0.15); 
+
+    background: #555c734f;
+    color: #ffffff;
+    text-shadow:1PX 1PX  rgb(166, 158, 158);
 }
 .btn:hover{
     background:#111827
@@ -227,6 +230,9 @@ canvas {
 
 #info{
     width: 15px;
+    background-color: #485075;
+    border-radius: 100PX;
+    border: 1PX solid #656b89;
 }
 
 .rank-wrap {
@@ -337,7 +343,9 @@ canvas {
 
   text-shadow:
     0 0 6px rgba(255,255,255,1),
-    0 0 18px rgba(255,153,0,1);
+    0 0 18px rgb(215, 175, 106),
+    0 0 5px rgb(81, 45, 24);
+
 
   animation: combo-float .7s ease-out forwards;
 }
@@ -361,9 +369,10 @@ canvas {
 .select {
   padding: 6px 8px;
   border-radius: 8px;
-  border: 1px solid rgba(255,255,255,.3);
-  background: #0f172a;
-  color: #e5e7eb;
+  border: 0px solid rgba(107, 84, 84, 0.405);
+  background: #555c734f;
+  color: #ffffff;
+  text-shadow:1PX 1PX  rgb(166, 158, 158);
 }
 
 /* 🎨 Night · Cozy（預設：現在的風格） */
