@@ -10,11 +10,17 @@ PROJECT_NAME_ZH = "LLM 輔助校園釣魚信與詐騙訊息辨識系統"
 PROJECT_NAME_EN = "A LLM-assisted Phishing and Scam Message Detection System for Campus Users"
 TEAM_NO = 67
 
-# ---- 模型設定（分支 C 的 API 串接方案）----
-MODEL = "gpt-4o-mini"          # 主要方案；備用 Gemini，未來 Ollama
+# ---- 模型設定 ----
+# 自動偵測：有 OPENAI_API_KEY 用 OpenAI；只有 GEMINI/GOOGLE_API_KEY 用 Gemini；都沒有用離線啟發式。
+MODEL = "gpt-4o-mini"          # OpenAI 主要方案
 TEMPERATURE = 0.2              # 降低隨機性，提升判斷穩定度
 MAX_TOKENS = 800               # 控制成本（分支 C 已設上限）
 MAX_INPUT_CHARS = 2000         # 前處理截斷長度
+
+# ---- Gemini 設定（免費備援方案）----
+# Google 提供 OpenAI 相容端點，可直接用同一個 OpenAI SDK，只需換 base_url 與 model。
+GEMINI_MODEL = "gemini-2.5-flash"
+GEMINI_BASE_URL = "https://generativelanguage.googleapis.com/v1beta/openai/"
 
 # ---- 路徑 ----
 ROOT = Path(__file__).resolve().parent

@@ -11,7 +11,7 @@ import json
 import streamlit as st
 
 import config
-from llm_analyzer import analyze, has_api_key
+from llm_analyzer import analyze, has_api_key, current_provider_label
 from incident_response import get_incident_advice, generate_report_draft
 
 st.set_page_config(page_title="校園釣魚訊息辨識系統", page_icon="🛡️", layout="centered")
@@ -32,7 +32,7 @@ with st.sidebar:
     st.header("關於本系統")
     st.write("貼上你收到的可疑訊息，系統會用 LLM 分析風險、列出可疑特徵，"
              "並給你白話、可照做的處理建議。")
-    mode = "🟢 線上（GPT-4o-mini）" if has_api_key() else "🟡 離線啟發式（未設定 API 金鑰）"
+    mode = current_provider_label()
     st.info(f"目前模式：{mode}")
     st.divider()
     page = st.radio("功能", ["單筆分析", "批次測試（展示用）"])

@@ -36,6 +36,46 @@ def _get_api_key():
     return None
 
 
+def _get_gemini_key():
+    """取得 Gemini 金鑰（支援 GEMINI_API_KEY 與 GOOGLE_API_KEY 兩種命名）。"""
+    for var in ("GEMINI_API_KEY", "GOOGLE_API_KEY"):
+        v = os.getenv(var)
+        if v:
+            return v
+    try:
+        import streamlit as st
+        for var in ("GEMINI_API_KEY", "GOOGLE_API_KEY"):
+            if var in st.secrets:
+                v = st.secrets[var]
+                os.environ[var] = v
+                return v
+    except Exception:
+        pass
+    return None
+
+
+def _resolve_provider():
+    """依現有金鑰決定使用哪家供應商。
+    回傳 (provider, api_key, model, base_url)；provider 為 "openai" / "gemini" / None。
+    優先序：OpenAI > Gemini > 離線。
+    """
+    if _get_api_key():
+        return ("openai", _get_api_key(), config.MODEL, None)
+    if _get_gemini_key():
+        return ("gemini", _get_gemini_key(), config.GEMINI_MODEL, config.GEMINI_BASE_URL)
+    return (None, None, None, None)
+
+
+def current_provider_label() -> str:
+    """供 app.py 在 sidebar 顯示目前使用的模型。"""
+    p, _, model, _ = _resolve_provider()
+    if p == "openai":
+        return f"🟢 線上 OpenAI（{model}）"
+    if p == "gemini":
+        return f"🟢 線上 Gemini（{model}，免費額度）"
+    return "🟡 離線啟發式（未設定任何 API 金鑰）"
+
+
 # ---------------------------------------------------------------------------
 # 輸出正規化：確保 6 欄齊全、取值合法、confidence 落在 0~1
 # ---------------------------------------------------------------------------
@@ -91,26 +131,40 @@ def _parse_json(text: str):
 
 
 # ---------------------------------------------------------------------------
-# 線上模式：呼叫 OpenAI
+# 線上模式：呼叫 LLM（OpenAI 或 Gemini，依現有金鑰自動切換）
 # ---------------------------------------------------------------------------
-def _analyze_openai(message: str, flags: dict, retries: int = 2, platform: str = None) -> dict:
+def _analyze_llm(message: str, flags: dict, retries: int = 2, platform: str = None) -> dict:
     from openai import OpenAI
-    client = OpenAI()
+    provider, api_key, model, base_url = _resolve_provider()
+    if not provider:
+        raise RuntimeError("沒有可用的 LLM 金鑰")
+
+    # Gemini 走 OpenAI 相容端點，只需要換 base_url 與 model；其他完全一致。
+    if provider == "gemini":
+        client = OpenAI(api_key=api_key, base_url=base_url)
+    else:
+        client = OpenAI(api_key=api_key)
+
     messages = prompts.build_messages(message, pre.feature_hint_text(flags), platform=platform)
+
+    # OpenAI 的 json_object 嚴格模式 Gemini 相容端點不一定支援；對 Gemini 略過，
+    # 改靠 prompt 內已明確要求「只輸出 JSON」+ _parse_json 容錯解析。
+    extra = {"response_format": {"type": "json_object"}} if provider == "openai" else {}
+
     last_err = None
     for _ in range(retries + 1):
         try:
             resp = client.chat.completions.create(
-                model=config.MODEL,
+                model=model,
                 messages=messages,
                 temperature=config.TEMPERATURE,
                 max_tokens=config.MAX_TOKENS,
-                response_format={"type": "json_object"},   # 強制 JSON 輸出
+                **extra,
             )
             return normalize_output(_parse_json(resp.choices[0].message.content), flags)
-        except Exception as e:           # JSON 解析失敗或 API 問題 → 重試
+        except Exception as e:
             last_err = e
-    raise RuntimeError(f"OpenAI 呼叫/解析多次失敗：{last_err}")
+    raise RuntimeError(f"{provider} 呼叫/解析多次失敗：{last_err}")
 
 
 # ---------------------------------------------------------------------------
@@ -162,12 +216,13 @@ def _analyze_heuristic(message: str, flags: dict) -> dict:
 # 對外入口
 # ---------------------------------------------------------------------------
 def has_api_key() -> bool:
-    return bool(_get_api_key())
+    """是否有任一可用線上金鑰（OpenAI 或 Gemini）。"""
+    return _resolve_provider()[0] is not None
 
 
 def analyze(message: str, use_mock: bool = None, platform: str = None) -> dict:
     """分析單一訊息，回傳 6 欄結構化結果。
-    use_mock=None 時自動判斷（有金鑰用線上、無金鑰用離線）。
+    use_mock=None 時自動判斷（有任一線上金鑰用線上、皆無則用離線）。
     platform 可選（"Email"/"LINE"/"簡訊"/"學校平台"），用於 v4 平台適配。
     """
     cleaned = pre.clean_text(message)
@@ -178,7 +233,7 @@ def analyze(message: str, use_mock: bool = None, platform: str = None) -> dict:
         result = _analyze_heuristic(cleaned, flags)
     else:
         try:
-            result = _analyze_openai(cleaned, flags, platform=platform)
+            result = _analyze_llm(cleaned, flags, platform=platform)
         except Exception as e:
             print(f"[llm_analyzer] 線上模式失敗，改用離線啟發式：{e}")
             result = _analyze_heuristic(cleaned, flags)
