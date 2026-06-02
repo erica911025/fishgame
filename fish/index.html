@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Gesture Goldfish Catching (HD Edition)</title>
+
+  <link rel="stylesheet" href="style.css" />
+  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.min.js"></script>
+
+  <script type="module" src="js/main.js"></script>
+
+
+</head>
+<body>
+<div id="wrap">
+  <aside id="panel">
+    <div>
+      <h2>Gesture Goldfish Catching</h2>
+      <div class="row">
+        <button id="btnStart" class="btn">▶ Start / Allow Camera</button>
+        <button id="btnReset" class="btn">↺ Reset</button>
+      </div>
+
+      <label class="row">
+        <input id="mirrorChk" type="checkbox" checked>
+        🪞 Mirror Mode
+      </label>
+
+      <!-- 🎨 Theme Selector -->
+<div class="row">
+  <label for="themeSelect">🎨 Theme</label>
+  <select id="themeSelect" class="select">
+    <option value="night-cozy">Night</option>
+    <option value="day-cozy">Day</option>
+  </select>
+</div>
+
+
+      <div class="row">Score: <b id="score">0</b></div>
+      
+      <div class="rank-wrap">
+        <div class="row">
+          Rank:
+          <b id="rankNow"></b>
+          <span id="rankNext"></span>
+          <img id="info" src="image/info.png" alt="Info">
+          <div id="ranks">
+              <p>0 pts: Rookie Catcher</p>
+              <p>10 pts: Fish Apprentice</p>
+              <p>20 pts: Skilled Angler</p>
+              <p>35 pts: Goldfish Master</p>
+              <p>50 pts: Legendary Hunter</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="row">Time Left: <b id="timeLeft">60</b> s</div>
+      <div class="row">FPS: <b id="fps">—</b></div>
+
+      <div class="row">Net Durability</div>
+      <div class="meter"><i id="durFill"></i></div>
+
+      <p class="row" style="opacity:.8">
+        Pinch = Catch.  
+        You can also hold left mouse button to play (no camera needed).
+      </p>
+    </div>
+
+    <div id="score" style="margin: 10px 0;">
+      <b>--- Scoring ---</b>
+      <div>
+        <p><img src="image/fish1.png" style="width:25px;height:25px;">: +1</p>
+        <p><img src="image/shrimp1.png" style="width:25px;height:25px;">: +1</p>
+        <p><img src="image/fish2.png" style="width:25px;height:25px;">: +2</p>
+        <p><img src="image/fish3.png" style="width:25px;height:25px;">: +3</p>
+        <p><img src="image/turtle3.png" style="width:25px;height:25px;">: +3</p>
+        <p><img src="image/fish4.png" style="width:25px;height:25px;">: +4</p>
+        <p><img src="image/trash-1.png" style="width:25px;height:25px;">: -1</p>
+        <p><img src="image/trash-2.png" style="width:25px;height:25px;">: -2</p>
+        <p><img src="image/time.png" style="width:25px;height:25px;">: +5 sec</p>
+        <p><img src="image/treasure.png" style="width:25px;height:25px;">: Durability +5</p>
+      </div>
+    </div>
+  </aside>
+
+  <main id="stageWrap">
+    <div id="combo" class="combo-label"></div>
+    <div id="rankHint" class="rank-hint"></div>
+
+    <canvas id="stage"></canvas>
+    <canvas id="fx"></canvas>
+
+    <video id="video" playsinline muted 
+           style="position:absolute;right:12px;bottom:12px;width:240px;border-radius:12px;opacity:.25"></video>
+
+    <div id="hud">⏱️ <b id="hudTime">60</b>s｜🎯 Hits: <b id="hudHit">0</b></div>
+
+    <div id="countdownOverlay" class="hide">
+      <div id="countdownText"></div>
+    </div>
+
+    <!-- Result Modal -->
+    <div id="modalMask" 
+         style="display:none;position:absolute;inset:0;background:rgba(0,0,0,.55);
+                align-items:center;justify-content:center;z-index:20">
+      <div style="background:#0f172a;border-radius:16px;padding:24px 28px;width:min(520px,90%);color:#e5e7eb">
+        <h2 id="resultTitle" style="margin:0 0 8px">Time’s Up!</h2>
+        <p id="resultLine" style="margin:0 0 4px">Score 0 | Rank —</p>
+        <p id="resultHint" style="opacity:.8;margin:0 0 12px"></p>
+        <button id="btnAgain" class="btn">Play Again</button>
+        <button id="btnClose" class="btn">Close</button>
+      </div>
+    </div>
+  </main>
+</div>
+
+<script type="module" src="js/main.js"></script>
+</body>
+</html>

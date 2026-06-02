@@ -1,0 +1,436 @@
+:root { 
+    --bg:#0b122062; 
+    --panel:#111827aa; 
+    --accent:#60a5fa; 
+    --good:#b91010; 
+    --warn:#f5220b;
+    --danger:#875858; 
+
+}
+
+html,body{
+    height:100%; 
+    margin:0; 
+    background:radial-gradient(1000px 600px at 50% 20%, #687c9c 0%, #5a77a7 60%, #21345c 100%); 
+    color:#ffffff; 
+    font-family:system-ui, -apple-system, Segoe UI, Roboto, Noto Sans TC, sans-serif;
+    overflow: hidden;
+}
+#wrap{
+    display:grid; 
+    grid-template-columns: 320px 1fr; 
+    gap:16px; 
+    height:100vh; 
+    padding:16px; 
+    box-sizing:border-box;
+}
+#panel{
+    background:var(--panel); 
+    border-radius:16px; 
+    padding:0px 16px;
+    box-shadow:0 10px 30px rgba(0,0,0,.35);
+    height: 100%;
+}
+#stageWrap{
+    position:relative; 
+    background:linear-gradient(180deg, rgba(96,165,250,.15), rgba(59,130,246,.05)); 
+    height: 100%;
+    border-radius:16px; 
+    overflow:hidden;
+}
+#stage{
+    position: relative;
+    display:block; 
+    width:100%; 
+    height:100%;
+    z-index: 2;
+}
+#video{
+    position:absolute; 
+    right:12px; 
+    bottom:12px; 
+    width:200px; 
+    height:150px; 
+    object-fit:cover; 
+    border-radius:12px; 
+    border:1px solid rgba(255,255,255,.1); 
+    opacity:.25;
+    
+}
+h1{
+    font-size:20px; 
+    margin:0 0 8px;
+}
+.row{
+    display:flex; 
+    align-items:center; 
+    gap:8px; 
+    margin:8px 0; 
+    flex-wrap:wrap
+}
+.badge{
+    padding:2px 8px; 
+    border-radius:999px; 
+    font-size:12px; 
+    border:1px solid rgba(255,255,255,.15)
+}
+.accent{
+    color:#93c5fd;
+}
+.btn{
+    cursor:pointer; 
+    padding:10px 12px; 
+    border-radius:10px; 
+    border:0px solid rgba(119, 89, 89, 0.15); 
+
+    background: #555c734f;
+    color: #ffffff;
+    text-shadow:1PX 1PX  rgb(166, 158, 158);
+}
+.btn:hover{
+    background:#111827
+}
+.toggle{
+    display:inline-flex; 
+    align-items:center; 
+    gap:8px; 
+    padding:8px 10px; 
+    border-radius:10px; 
+    border:1px solid rgba(255,255,255,.15); 
+    background:#0f172a
+}
+.meter{
+    height:10px; 
+    border-radius:999px; 
+    background:rgba(255,255,255,.08); 
+    overflow:hidden
+}
+.meter > i{
+    display:block; 
+    height:100%; 
+    width:0%; 
+    background:linear-gradient(90deg, var(--good), var(--accent));
+}
+.hint{
+    font-size:12px; 
+    color:#9ca3af
+}
+.score{
+    font-size:32px; 
+    font-weight:800; 
+    letter-spacing:.5px;
+}
+.topLeft{
+    position:absolute; 
+    left:12px; 
+    top:12px; 
+    background:rgba(0,0,0,.25); 
+    padding:8px 10px; 
+    border-radius:10px; 
+    backdrop-filter: blur(6px);
+}
+.topRight{
+    position:absolute; 
+    right:12px; 
+    top:12px; 
+    background:rgba(0,0,0,.25); 
+    padding:8px 10px; 
+    border-radius:10px; 
+    backdrop-filter: blur(6px);
+}
+.toast{
+    position:absolute; 
+    left:50%; 
+    transform:translateX(-50%); 
+    top:20%; 
+    background:rgba(0,0,0,.45); 
+    padding:10px 14px; 
+    border-radius:12px; 
+    font-weight:700; 
+    letter-spacing:.5px
+}
+.combo-label {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 60px;
+  font-weight: 900;
+  color: rgba(182, 200, 238, 0.3);
+  z-index: 1; 
+  pointer-events: none;
+  user-select: none;
+}
+.rank-hint {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 42px;
+  font-weight: 900;
+  color: rgba(255, 255, 255, 0.95);  /* ⭐ 白色大字 */
+  /* text-shadow: 0 0 10px rgba(0,0,0,0.7); ⭐ 黑陰影 */
+  /* z-index: 99999; */
+  text-align: center;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.25s ease;
+}
+
+.rank-hint.show {
+  opacity: 1;
+}
+canvas {
+  image-rendering: crisp-edges;
+  image-rendering: pixelated;
+}
+
+#countdownOverlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.65);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+  color: #fff;
+  font-size: 120px;
+  font-weight: bold;
+  backdrop-filter: blur(5px);
+}
+
+#countdownOverlay.hide {
+  display: none;
+}
+
+#countdownText {
+  animation: scalePop 0.7s ease-out;
+}
+
+@keyframes scalePop {
+  0%   { transform: scale(0.2); opacity: 0; }
+  60%  { transform: scale(1.2); opacity: 1; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+#score{
+    display: flex;
+    flex-direction: column;
+}
+
+#score div{
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+}
+
+#score p{
+    margin: 5px;
+}
+
+#info{
+    width: 15px;
+    background-color: #485075;
+    border-radius: 100PX;
+    border: 1PX solid #656b89;
+}
+
+.rank-wrap {
+  position: relative;
+  display: inline-block; /* 讓 tooltip 跟稱號區域綁在一起 */
+}
+
+/* tooltip 預設隱藏 */
+#ranks {
+  display: none;
+  position: absolute;
+  top: 0;
+  left: 110%;
+  margin-top: 6px;
+  padding: 8px 12px;
+  background: rgba(0, 0, 0, 0.8);
+  color: #fff;
+  border-radius: 8px;
+  font-size: 14px;
+  line-height: 1.4;
+  z-index: 100;
+  white-space: nowrap; /* 不想換行可以留著，要自動換行就刪掉 */
+}
+
+/* 滑到 info 圖示時顯示 tooltip */
+.rank-wrap #info {
+  cursor: pointer;
+}
+
+.rank-wrap #info:hover + #ranks {
+  display: block;
+}
+
+/* COMBO 文字本體 */
+#combo {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  font-size: 32px;
+  font-weight: 900;
+  letter-spacing: 2px;
+  color: #ffffff;
+  opacity: 0;
+  transform: scale(0.6);
+  pointer-events: none;
+  transition: opacity .15s ease-out;
+
+  text-shadow:
+    0 0 6px rgba(255,255,255,.8),
+    0 0 16px rgba(0,255,255,.9),
+    0 0 32px rgba(0,128,255,.8);
+}
+
+/* 有 combo 時常駐顯示 */
+#combo.combo-show {
+  opacity: 1;
+}
+
+/* 每次 combo 成功時觸發的彈出 + 光暈動畫 */
+#combo.combo-pop {
+  animation: combo-pop .35s ease-out, combo-glow .8s ease-out;
+}
+
+/* 爆炸縮放 */
+@keyframes combo-pop {
+  0% {
+    transform: translateY(0) scale(.3);
+    opacity: 0;
+  }
+  40% {
+    transform: translateY(-6px) scale(1.3);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+  }
+}
+
+/* 光暈閃一下 */
+@keyframes combo-glow {
+  0% {
+    text-shadow:
+      0 0 4px rgba(255,255,255,.2),
+      0 0 10px rgba(0,255,255,.6);
+  }
+  50% {
+    text-shadow:
+      0 0 10px rgba(255,255,255,1),
+      0 0 25px rgba(0,255,255,1),
+      0 0 40px rgba(0,128,255,1);
+  }
+  100% {
+    text-shadow:
+      0 0 6px rgba(255,255,255,.6),
+      0 0 16px rgba(0,255,255,.7);
+  }
+}
+
+/* 飄起來的一次性 COMBO 文字 */
+.combo-float {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  font-size: 24px;
+  font-weight: 900;
+  color: #ffe66d;
+  pointer-events: none;
+
+  text-shadow:
+    0 0 6px rgba(255,255,255,1),
+    0 0 18px rgb(215, 175, 106),
+    0 0 5px rgb(81, 45, 24);
+
+
+  animation: combo-float .7s ease-out forwards;
+}
+
+/* 往上飄、放大、淡出 */
+@keyframes combo-float {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -10px) scale(.3);
+  }
+  25% {
+    opacity: 1;
+    transform: translate(-50%, -40px) scale(1.1);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -90px) scale(.9);
+  }
+}
+
+.select {
+  padding: 6px 8px;
+  border-radius: 8px;
+  border: 0px solid rgba(107, 84, 84, 0.405);
+  background: #555c734f;
+  color: #ffffff;
+  text-shadow:1PX 1PX  rgb(166, 158, 158);
+}
+
+/* 🎨 Night · Cozy（預設：現在的風格） */
+body.theme-night-cozy {
+  background: radial-gradient(1000px 600px at 50% 20%, #687c9c 0%, #5a77a7 60%, #21345c 100%);
+  color: #ffffff;
+}
+body.theme-night-cozy #stageWrap {
+  background: linear-gradient(180deg, rgba(96,165,250,.15), rgba(59,130,246,.05));
+}
+body.theme-night-cozy #panel {
+  background: var(--panel);
+}
+
+/* 🎨 Night · Spooky：紫 + 墨綠、比較陰森的夜晚 */
+body.theme-night-spooky {
+  background: radial-gradient(900px 540px at 50% 15%, #2b1b3f 0%, #120918 55%, #020308 100%);
+  color: #f9fafb;
+}
+body.theme-night-spooky #stageWrap {
+  background: radial-gradient(800px 600px at 50% 20%, rgba(55,65,81,0.6) 0%, rgba(15,23,42,0.95) 60%);
+}
+body.theme-night-spooky #panel {
+  background: rgba(15,23,42,0.95);
+}
+
+/* 🎨 Day · Cozy：明亮藍天 + 淡黃色水面，溫暖可愛 */
+body.theme-day-cozy {
+  background: radial-gradient(1100px 700px at 50% 0%, #e0f2fe 0%, #bae6fd 40%, #7dd3fc 100%);
+  color: #0f172a;
+}
+body.theme-day-cozy #stageWrap {
+  background: linear-gradient(180deg, rgba(191,219,254,0.9), rgba(254,249,195,0.7));
+}
+body.theme-day-cozy #panel {
+  background: rgba(255,255,255,0.85);
+  color: #111827;
+}
+
+/* 🎨 Day · Spooky：灰霧 + 偏綠的水色，白天但有陰森感 */
+body.theme-day-spooky {
+  background: radial-gradient(1000px 650px at 50% 0%, #e5e7eb 0%, #9ca3af 40%, #4b5563 100%);
+  color: #111827;
+}
+body.theme-day-spooky #stageWrap {
+  background: linear-gradient(180deg, rgba(148,163,184,0.9), rgba(22,101,52,0.7));
+}
+body.theme-day-spooky #panel {
+  background: rgba(31,41,55,0.88);
+  color: #e5e7eb;
+}
+
+#fx {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none; /* 不擋滑鼠 / 手勢 */
+  z-index: 3;          /* 疊在魚跟撈網上面 */
+}
